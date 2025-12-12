@@ -1,0 +1,52 @@
+### Test the server is running
+GET http://localhost:4000
+
+### 1. REGISTER - Create a new user
+POST http://localhost:4000/auth/register
+Content-Type: application/json
+
+{
+  "email": "jefferydahmar@gmail.com",
+  "password": "dahmar123",
+  "name": "Jeffery Dahmar",
+  "gender": "male",
+  "city": "California",
+  "country": "USA",
+  "phone": "+133032349995",
+  "postalCode": "091230"
+}
+
+### 2. LOGIN - Login with the same user
+POST http://localhost:4000/auth/login
+Content-Type: application/json
+
+{
+  "email": "roshaanrajpoot@gmail.com",
+  "password": "roshaanstack123"
+}
+
+### 3. GET PROFILE - Access protected route
+GET http://localhost:4000/auth/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvc2hhYW5yYWpwb290QGdtYWlsLmNvbSIsInN1YiI6MzQsInV1aWQiOiJmMzAyMGVkZi03Y2VjLTQ5ZGItYWZmOC0yNmE2ZmQyMTJmYmYiLCJpYXQiOjE3NjU1NDY4NTgsImV4cCI6MTc2NTU1MDQ1OH0.zB5fzO9GT7_mY82vySdU6OeYzvmdmKI4zi-Lau-3ozs
+
+### 4. UPDATE PROFILE - Update user information
+PUT http://localhost:4000/auth/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvc2hhYW5yYWpwb290QGdtYWlsLmNvbSIsInN1YiI6MzQsInV1aWQiOiJmMzAyMGVkZi03Y2VjLTQ5ZGItYWZmOC0yNmE2ZmQyMTJmYmYiLCJpYXQiOjE3NjU1NDY4NTgsImV4cCI6MTc2NTU1MDQ1OH0.zB5fzO9GT7_mY82vySdU6OeYzvmdmKI4zi-Lau-3ozs
+Content-Type: application/json
+
+{
+  "name": "RoshaanStack",
+  "city": "Lahore",
+  "gender": "male",
+  "currentPassword": "roshaan123",
+  "newPassword": "roshaanstack123"
+}
+
+### 5. DELETE ACCOUNT
+DELETE http://localhost:4000/auth/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFuYXN6YWZhckBnbWFpbC5jb20iLCJzdWIiOjMwLCJ1dWlkIjoiODRhYWEwMmMtMTM3ZS00NmE0LWE5NjEtYzI2ZDVmMDM3NTM4IiwiaWF0IjoxNzY1NTQxNjAxLCJleHAiOjE3NjU1NDUyMDF9.Z4lnEZMvqCLGLC-i7xy1WmVkDf4cH-VqSwKtmknjoRI
+Content-Type: application/json
+
+{
+  "password": "anasdev123"
+}
