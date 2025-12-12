@@ -21,13 +21,13 @@ POST http://localhost:4000/auth/login
 Content-Type: application/json
 
 {
-  "email": "roshaanrajpoot@gmail.com",
-  "password": "roshaanstack123"
+  "email": "stevefox@gmail.com",
+  "password": "stevefox123"
 }
 
 ### 3. GET PROFILE - Access protected route
 GET http://localhost:4000/auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvc2hhYW5yYWpwb290QGdtYWlsLmNvbSIsInN1YiI6MzQsInV1aWQiOiJmMzAyMGVkZi03Y2VjLTQ5ZGItYWZmOC0yNmE2ZmQyMTJmYmYiLCJpYXQiOjE3NjU1NDY4NTgsImV4cCI6MTc2NTU1MDQ1OH0.zB5fzO9GT7_mY82vySdU6OeYzvmdmKI4zi-Lau-3ozs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN0ZXZlZm94QGdtYWlsLmNvbSIsInN1YiI6MzUsInV1aWQiOiJmZGI4MmE3ZC1lM2E2LTQ1NTItYThlZS1jN2Q2NmE4ZWQxYTIiLCJpYXQiOjE3NjU1NDk0MzYsImV4cCI6MTc2NTU1MzAzNn0.d3pfLlXeEcp0-b4rDIwzO_JW2AljvEXoUymEY68FgkU
 
 ### 4. UPDATE PROFILE - Update user information
 PUT http://localhost:4000/auth/profile
