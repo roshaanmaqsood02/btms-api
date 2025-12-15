@@ -6,13 +6,13 @@ POST http://localhost:4000/auth/register
 Content-Type: application/json
 
 {
-  "email": "shezyrajpoot@gmail.com",
-  "password": "shezylatte",
-  "name": "Jeffery Dahmar",
+  "email": "jinpachi@gmail.com",
+  "password": "jnpachi123",
+  "name": "Jinpachi Mishima",
   "gender": "male",
-  "city": "Guajranwala",
-  "country": "Pakistan",
-  "phone": "+92300012345",
+  "city": "New York",
+  "country": "USA",
+  "phone": "+132300012345",
   "postalCode": "091230"
 }
 
@@ -21,25 +21,22 @@ POST http://localhost:4000/auth/login
 Content-Type: application/json
 
 {
-  "email": "shezyrajpoot@gmail.com",
-  "password": "shezylatte"
+  "email": "jinpachi@gmail.com",
+  "password": "jnpachi123"
 }
 
 ### 3. GET PROFILE - Access protected route
 GET http://localhost:4000/auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNoZXp5cmFqcG9vdEBnbWFpbC5jb20iLCJzdWIiOjQzLCJ1dWlkIjoiNGQ5Y2Y1NmYtNjljOS00ZjI1LWJjMGEtOWQzNWMyY2YzYzczIiwiaWF0IjoxNzY1NTUxNzg2LCJleHAiOjE3NjU1NTUzODZ9.wCb6Jcva2JF8sge2eeSTFYc8Rk_2KfKuIKYG0ySJSyE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImppbnBhY2hpQGdtYWlsLmNvbSIsInN1YiI6NDQsInV1aWQiOiI0N2M5ZDA3My1kOGYzLTRmMjUtOTIzOC05ZjI4ZTFmMTk0ZTUiLCJpYXQiOjE3NjU3NzU2MDMsImV4cCI6MTc2NTc3OTIwM30.ZlhLRy7-4CAzMGxdhuwBa31Jieam7dtUnFy2c6h1oPc
 
 ### 4. UPDATE PROFILE - Update user information
 PUT http://localhost:4000/auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNoZXp5cmFqcG9vdEBnbWFpbC5jb20iLCJzdWIiOjQzLCJ1dWlkIjoiNGQ5Y2Y1NmYtNjljOS00ZjI1LWJjMGEtOWQzNWMyY2YzYzczIiwiaWF0IjoxNzY1NTUxNzg2LCJleHAiOjE3NjU1NTUzODZ9.wCb6Jcva2JF8sge2eeSTFYc8Rk_2KfKuIKYG0ySJSyE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImppbnBhY2hpQGdtYWlsLmNvbSIsInN1YiI6NDQsInV1aWQiOiI0N2M5ZDA3My1kOGYzLTRmMjUtOTIzOC05ZjI4ZTFmMTk0ZTUiLCJpYXQiOjE3NjU3NzU2MDMsImV4cCI6MTc2NTc3OTIwM30.ZlhLRy7-4CAzMGxdhuwBa31Jieam7dtUnFy2c6h1oPc
 Content-Type: application/json
 
 {
-  "name": "Shezy Rajpoot",
-  "city": "Gujranwala",
-  "gender": "male",
-  "currentPassword": "shezylatte",
-  "newPassword": "shawaizlatte"
+  "currentPassword": "jnpachi123",
+  "newPassword": "jinpachi123"
 }
 
 ### 5. DELETE ACCOUNT
