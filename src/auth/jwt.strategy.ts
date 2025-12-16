@@ -3,13 +3,13 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
-import { AuthService } from './auth.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
-    private configService: ConfigService,
-    private authService: AuthService,
+    private readonly configService: ConfigService,
+    private readonly usersService: UsersService, // ✅ inject UsersService directly
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -19,18 +19,15 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: any) {
-    const user = await this.authService.validateToken(payload);
+    // Use UsersService directly to find the user by UUID
+    const user = await this.usersService.findByUuid(payload.uuid);
 
     if (!user) {
       throw new UnauthorizedException('User not found or token is invalid');
     }
 
-    // Ensure password is not included in the returned user object
-    if (user && 'password' in user) {
-      const { password, ...userWithoutPassword } = user;
-      return userWithoutPassword;
-    }
-
-    return user;
+    // Always strip the password
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 }

@@ -1,4 +1,10 @@
-import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
+import {
+  IsArray,
+  IsEmail,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 
 export class RegisterDto {
   @IsEmail()
@@ -31,4 +37,20 @@ export class RegisterDto {
   @IsOptional()
   @IsString()
   postalCode?: string;
+
+  @IsOptional()
+  @IsString()
+  department?: string;
+
+  @IsOptional()
+  @IsArray()
+  projects?: string[];
+
+  @IsOptional()
+  @IsArray()
+  positions?: string[];
+
+  @IsOptional()
+  @IsString()
+  profilePic?: string;
 }

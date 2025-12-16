@@ -1,49 +1,53 @@
-### Test the server is running
-GET http://localhost:4000
+### Variables
+@baseUrl = http://localhost:4000
+@contentType = application/json
 
-### 1. REGISTER - Create a new user
-POST http://localhost:4000/auth/register
-Content-Type: application/json
+### 1. REGISTER a new user with all fields
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
 
 {
-  "email": "jinpachi@gmail.com",
-  "password": "jnpachi123",
-  "name": "Jinpachi Mishima",
+  "email": "admin@admin.com",
+  "password": "password123",
+  "name": "Roshaan Dev",
   "gender": "male",
   "city": "New York",
   "country": "USA",
-  "phone": "+132300012345",
-  "postalCode": "091230"
+  "phone": "+1234567890",
+  "postalCode": "10001",
+  "department": "Engineering",
+  "projects": ["Monitair"],
+  "positions": ["Team Lead"]
 }
 
 ### 2. LOGIN - Login with the same user
-POST http://localhost:4000/auth/login
-Content-Type: application/json
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
 
 {
-  "email": "jinpachi@gmail.com",
-  "password": "jnpachi123"
+  "email": "superadmin@gmail.com",
+  "password": "admin123"
 }
 
 ### 3. GET PROFILE - Access protected route
 GET http://localhost:4000/auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImppbnBhY2hpQGdtYWlsLmNvbSIsInN1YiI6NDQsInV1aWQiOiI0N2M5ZDA3My1kOGYzLTRmMjUtOTIzOC05ZjI4ZTFmMTk0ZTUiLCJpYXQiOjE3NjU3NzU2MDMsImV4cCI6MTc2NTc3OTIwM30.ZlhLRy7-4CAzMGxdhuwBa31Jieam7dtUnFy2c6h1oPc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN1cGVyYWRtaW5AZ21haWwuY29tIiwic3ViIjo3NywidXVpZCI6IjA4OTVlNDdkLWM3N2UtNDVkMi1hZGFlLTdiMWM2Y2QxYWRjZCIsImlhdCI6MTc2NTg4NjQ2MywiZXhwIjoxNzY1ODkwMDYzfQ.9Zmm6UfVsuakjf4-ApgWXM2eGm5Ysez5MDrBx1sFDto
 
 ### 4. UPDATE PROFILE - Update user information
-PUT http://localhost:4000/auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImppbnBhY2hpQGdtYWlsLmNvbSIsInN1YiI6NDQsInV1aWQiOiI0N2M5ZDA3My1kOGYzLTRmMjUtOTIzOC05ZjI4ZTFmMTk0ZTUiLCJpYXQiOjE3NjU3NzU2MDMsImV4cCI6MTc2NTc3OTIwM30.ZlhLRy7-4CAzMGxdhuwBa31Jieam7dtUnFy2c6h1oPc
-Content-Type: application/json
+PUT {{baseUrl}}auth/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN1cGVyYWRtaW5AZ21haWwuY29tIiwic3ViIjo3NywidXVpZCI6IjA4OTVlNDdkLWM3N2UtNDVkMi1hZGFlLTdiMWM2Y2QxYWRjZCIsImlhdCI6MTc2NTg4NjQ2MywiZXhwIjoxNzY1ODkwMDYzfQ.9Zmm6UfVsuakjf4-ApgWXM2eGm5Ysez5MDrBx1sFDto
+Content-Type: {{contentType}}
 
 {
-  "currentPassword": "jnpachi123",
-  "newPassword": "jinpachi123"
+  "currentPassword": "admin123",
+  "newPassword": "admin123123"
 }
 
 ### 5. DELETE ACCOUNT
-DELETE http://localhost:4000/auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFuYXN6YWZhckBnbWFpbC5jb20iLCJzdWIiOjMwLCJ1dWlkIjoiODRhYWEwMmMtMTM3ZS00NmE0LWE5NjEtYzI2ZDVmMDM3NTM4IiwiaWF0IjoxNzY1NTQxNjAxLCJleHAiOjE3NjU1NDUyMDF9.Z4lnEZMvqCLGLC-i7xy1WmVkDf4cH-VqSwKtmknjoRI
-Content-Type: application/json
+DELETE {{baseUrl}}auth/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN1cGVyYWRtaW5AZ21haWwuY29tIiwic3ViIjo3NywidXVpZCI6IjA4OTVlNDdkLWM3N2UtNDVkMi1hZGFlLTdiMWM2Y2QxYWRjZCIsImlhdCI6MTc2NTg4NjQ2MywiZXhwIjoxNzY1ODkwMDYzfQ.9Zmm6UfVsuakjf4-ApgWXM2eGm5Ysez5MDrBx1sFDto
+Content-Type: {{contentType}}
 
 {
-  "password": "anasdev123"
+  "password": "admin123123"
 }
