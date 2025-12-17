@@ -13,6 +13,7 @@ import {
   HttpStatus,
   UploadedFile,
   UseInterceptors,
+  BadRequestException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -23,13 +24,18 @@ import {
   UpdateUserDto,
 } from 'src/users/dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { profilePicMulterConfig } from 'src/common/multer.config';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+  ) {}
 
   /* -------------------------------------------------------------------------- */
-  /*                                REGISTER                                      */
+  /*                                REGISTER                                    */
   /* -------------------------------------------------------------------------- */
   @Post('register')
   @UsePipes(new ValidationPipe({ whitelist: true }))
@@ -38,7 +44,7 @@ export class AuthController {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                                  LOGIN                                      */
+  /*                                  LOGIN                                     */
   /* -------------------------------------------------------------------------- */
   @Post('login')
   @UsePipes(new ValidationPipe({ whitelist: true }))
@@ -47,7 +53,7 @@ export class AuthController {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                                 LOGOUT                                      */
+  /*                                 LOGOUT                                     */
   /* -------------------------------------------------------------------------- */
   @UseGuards(AuthGuard('jwt'))
   @Post('logout')
@@ -57,7 +63,7 @@ export class AuthController {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                                GET PROFILE                                   */
+  /*                                GET PROFILE                                 */
   /* -------------------------------------------------------------------------- */
   @UseGuards(AuthGuard('jwt'))
   @Get('profile')
@@ -66,7 +72,7 @@ export class AuthController {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                            UPDATE PROFILE                                    */
+  /*                            UPDATE PROFILE                                  */
   /* -------------------------------------------------------------------------- */
   @UseGuards(AuthGuard('jwt'))
   @Put('profile')
@@ -76,32 +82,27 @@ export class AuthController {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                       UPDATE PROFILE PICTURE                                 */
+  /*                       UPDATE PROFILE PICTURE                               */
   /* -------------------------------------------------------------------------- */
   @UseGuards(AuthGuard('jwt'))
   @Put('profile/picture')
-  @UseInterceptors(FileInterceptor('profilePic'))
+  @UseInterceptors(FileInterceptor('profilePic', profilePicMulterConfig))
   async updateProfilePicture(
     @Request() req,
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) {
-      return { message: 'No file uploaded' };
+      throw new BadRequestException('Profile picture is required');
     }
-
-    // You can store the file path or URL in DB
-    const updatedUser = await this.authService.updateProfile(req.user.id, {
-      profilePic: file.filename || file.path,
-    });
 
     return {
       message: 'Profile picture updated successfully',
-      user: updatedUser,
+      user: await this.usersService.updateProfilePic(req.user.id, file),
     };
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                            DELETE USER                                       */
+  /*                            DELETE USER                                     */
   /* -------------------------------------------------------------------------- */
   @UseGuards(AuthGuard('jwt'))
   @Delete('profile')

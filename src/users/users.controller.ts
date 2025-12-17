@@ -10,14 +10,17 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
+  ForbiddenException,
+  Request,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { JwtStrategy } from 'src/auth/jwt.strategy';
+import { profilePicMulterConfig } from 'src/common/multer.config';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
-@UseGuards(JwtStrategy) // 🔐 protect all routes
+@UseGuards(AuthGuard('jwt'))
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -49,15 +52,16 @@ export class UsersController {
     return this.usersService.update(+id, dto);
   }
 
-  // PUT /users/:id/profile-picture
+  // ADMIN ONLY
   @Put(':id/profile-picture')
-  @UseInterceptors(FileInterceptor('profilePic'))
-  async uploadProfilePicture(
+  @UseInterceptors(FileInterceptor('profilePic', profilePicMulterConfig))
+  async updateUserProfilePic(
     @Param('id') id: number,
     @UploadedFile() file: Express.Multer.File,
+    @Request() req,
   ) {
-    if (!file) {
-      throw new NotFoundException('Profile picture not provided');
+    if (req.user.role !== 'admin') {
+      throw new ForbiddenException('Admins only');
     }
 
     return this.usersService.updateProfilePic(+id, file);

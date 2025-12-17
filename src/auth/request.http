@@ -7,9 +7,9 @@ POST {{baseUrl}}/auth/register
 Content-Type: {{contentType}}
 
 {
-  "email": "admin@admin.com",
-  "password": "password123",
-  "name": "Roshaan Dev",
+  "email": "test5@admin.com",
+  "password": "123456",
+  "name": "Test",
   "gender": "male",
   "city": "New York",
   "country": "USA",
@@ -17,7 +17,8 @@ Content-Type: {{contentType}}
   "postalCode": "10001",
   "department": "Engineering",
   "projects": ["Monitair"],
-  "positions": ["Team Lead"]
+  "positions": ["Team Lead"],
+  "profilePic": "btms-api/src/admin/roshaan_pic.jpg"
 }
 
 ### 2. LOGIN - Login with the same user
@@ -25,29 +26,43 @@ POST {{baseUrl}}/auth/login
 Content-Type: {{contentType}}
 
 {
-  "email": "superadmin@gmail.com",
-  "password": "admin123"
+  "email": "test5@admin.com",
+  "password": "123456"
 }
 
 ### 3. GET PROFILE - Access protected route
-GET http://localhost:4000/auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN1cGVyYWRtaW5AZ21haWwuY29tIiwic3ViIjo3NywidXVpZCI6IjA4OTVlNDdkLWM3N2UtNDVkMi1hZGFlLTdiMWM2Y2QxYWRjZCIsImlhdCI6MTc2NTg4NjQ2MywiZXhwIjoxNzY1ODkwMDYzfQ.9Zmm6UfVsuakjf4-ApgWXM2eGm5Ysez5MDrBx1sFDto
+GET {{baseUrl}}/auth/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3Q1QGFkbWluLmNvbSIsInN1YiI6OTksInV1aWQiOiJlZTJjNjU1ZC01OGJlLTRiZWItYTZlYy1iZGFjMDM1ZDA4Y2YiLCJpYXQiOjE3NjU5NTgxMzgsImV4cCI6MTc2NTk2MTczOH0.c5y4cAZx6bXnU81TBQDmxFF4ioWENIbRGarxyng-XRM
 
-### 4. UPDATE PROFILE - Update user information
-PUT {{baseUrl}}auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN1cGVyYWRtaW5AZ21haWwuY29tIiwic3ViIjo3NywidXVpZCI6IjA4OTVlNDdkLWM3N2UtNDVkMi1hZGFlLTdiMWM2Y2QxYWRjZCIsImlhdCI6MTc2NTg4NjQ2MywiZXhwIjoxNzY1ODkwMDYzfQ.9Zmm6UfVsuakjf4-ApgWXM2eGm5Ysez5MDrBx1sFDto
+PUT {{baseUrl}}/auth/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QxQGFkbWluLmNvbSIsInN1YiI6OTQsInV1aWQiOiIxNmQyNmQxNS05ZTk3LTQ0YjktYjdiZC1jNzY2YjZlOGE0ZDkiLCJpYXQiOjE3NjU5NTU2MzcsImV4cCI6MTc2NTk1OTIzN30.2dj0rLoYaFTMKP4WxKSEoJ4Ba0P_L_oWKbjeBei7tgI
 Content-Type: {{contentType}}
 
 {
-  "currentPassword": "admin123",
-  "newPassword": "admin123123"
+  "currentPassword": "123456",
+  "newPassword": "Adminpass123!"
 }
 
-### 5. DELETE ACCOUNT
-DELETE {{baseUrl}}auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN1cGVyYWRtaW5AZ21haWwuY29tIiwic3ViIjo3NywidXVpZCI6IjA4OTVlNDdkLWM3N2UtNDVkMi1hZGFlLTdiMWM2Y2QxYWRjZCIsImlhdCI6MTc2NTg4NjQ2MywiZXhwIjoxNzY1ODkwMDYzfQ.9Zmm6UfVsuakjf4-ApgWXM2eGm5Ysez5MDrBx1sFDto
+### 5. UPDATE PROFILE PICTURE - Update profile picture  
+
+### UPDATE PROFILE PICTURE
+PUT {{baseUrl}}/auth/profile/picture
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3Q1QGFkbWluLmNvbSIsInN1YiI6OTksInV1aWQiOiJlZTJjNjU1ZC01OGJlLTRiZWItYTZlYy1iZGFjMDM1ZDA4Y2YiLCJpYXQiOjE3NjU5NTgxMzgsImV4cCI6MTc2NTk2MTczOH0.c5y4cAZx6bXnU81TBQDmxFF4ioWENIbRGarxyng-XRM
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+
+------WebKitFormBoundary
+Content-Disposition: form-data; name="profilePic"; filename="roshaan_pic.jpg"
+Content-Type: image/jpeg
+
+< ./src/admin/roshaan_pic.jpg
+------WebKitFormBoundary--
+
+
+### 6. DELETE ACCOUNT
+DELETE {{baseUrl}}/auth/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QxQGFkbWluLmNvbSIsInN1YiI6OTQsInV1aWQiOiIxNmQyNmQxNS05ZTk3LTQ0YjktYjdiZC1jNzY2YjZlOGE0ZDkiLCJpYXQiOjE3NjU5NTU2MzcsImV4cCI6MTc2NTk1OTIzN30.2dj0rLoYaFTMKP4WxKSEoJ4Ba0P_L_oWKbjeBei7tgI
 Content-Type: {{contentType}}
 
 {
-  "password": "admin123123"
+  "password": "Adminpass123!"
 }

@@ -1,9 +1,7 @@
-// src/users/users.service.ts
 import {
   Injectable,
   ConflictException,
   NotFoundException,
-  InternalServerErrorException,
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,12 +10,14 @@ import * as bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly configService: ConfigService,
   ) {}
 
   /* -------------------------------------------------------------------------- */
@@ -35,7 +35,6 @@ export class UsersService {
     department?: string;
     projects?: string[];
     positions?: string[];
-    profilePic?: string;
   }): Promise<User> {
     const existingUser = await this.userRepository.findOne({
       where: { email: data.email },
@@ -58,7 +57,7 @@ export class UsersService {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                               FIND OPERATIONS                               */
+  /*                               FIND OPERATIONS                              */
   /* -------------------------------------------------------------------------- */
 
   async findAll(params: { page: number; limit: number; search?: string }) {
@@ -103,7 +102,7 @@ export class UsersService {
     try {
       const user = await this.userRepository
         .createQueryBuilder('user')
-        .addSelect('user.password') // Explicitly select password
+        .addSelect('user.password')
         .where('user.id = :id', { id })
         .getOne();
 
@@ -115,7 +114,7 @@ export class UsersService {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                              AUTH VALIDATION                                */
+  /*                              AUTH VALIDATION                               */
   /* -------------------------------------------------------------------------- */
 
   async validateUser(email: string, password: string): Promise<User | null> {
@@ -130,7 +129,7 @@ export class UsersService {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                               UPDATE USER                                   */
+  /*                               UPDATE USER                                  */
   /* -------------------------------------------------------------------------- */
 
   async update(id: number, dto: UpdateUserDto): Promise<User> {
@@ -208,23 +207,28 @@ export class UsersService {
       password: hashedPassword,
     });
   }
+
   /* -------------------------------------------------------------------------- */
-  /*                          PROFILE PICTURE UPDATE                              */
+  /*                          PROFILE PICTURE UPDATE                            */
   /* -------------------------------------------------------------------------- */
 
-  async updateProfilePic(id: number, file: Express.Multer.File): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id } });
+  async updateProfilePic(userId: number, file: Express.Multer.File) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('User not found');
 
-    // Example: local storage
-    user.profilePic = `/uploads/users/${file.filename}`;
+    const baseUrl = this.configService.get<string>('BASE_URL');
+    if (!baseUrl) {
+      throw new Error('BASE_URL is not defined');
+    }
 
-    const updatedUser = await this.userRepository.save(user);
-    return this.sanitizeUser(updatedUser);
+    user.profilePic = `${baseUrl}/uploads/profilePic/${file.filename}`;
+    await this.userRepository.save(user);
+
+    return this.sanitizeUser(user);
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                                DELETE USER                                   */
+  /*                                DELETE USER                                 */
   /* -------------------------------------------------------------------------- */
 
   async deleteUser(id: number): Promise<{ message: string }> {
@@ -236,7 +240,7 @@ export class UsersService {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                              HELPER METHODS                                  */
+  /*                              HELPER METHODS                                */
   /* -------------------------------------------------------------------------- */
 
   private sanitizeUser(user: User): User {

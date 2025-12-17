@@ -16,7 +16,7 @@ export class AuthService {
   ) {}
 
   /* -------------------------------------------------------------------------- */
-  /*                                REGISTER                                     */
+  /*                                REGISTER                                    */
   /* -------------------------------------------------------------------------- */
   async register(data: {
     email: string;
@@ -28,7 +28,6 @@ export class AuthService {
     phone?: string;
     postalCode?: string;
     department?: string;
-    profilePic?: string;
     projects?: string[];
     positions?: string[];
   }) {
@@ -43,7 +42,7 @@ export class AuthService {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                                 LOGIN                                       */
+  /*                                 LOGIN                                      */
   /* -------------------------------------------------------------------------- */
   async login(email: string, password: string) {
     const user = await this.userService.validateUser(email, password);
@@ -61,14 +60,14 @@ export class AuthService {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                                LOGOUT                                        */
+  /*                                LOGOUT                                      */
   /* -------------------------------------------------------------------------- */
   async logout(userId: number) {
     return { message: 'Logged out successfully' };
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                              VALIDATE TOKEN                                  */
+  /*                              VALIDATE TOKEN                                */
   /* -------------------------------------------------------------------------- */
   async validateToken(payload: any) {
     if (payload.uuid) {
@@ -90,7 +89,7 @@ export class AuthService {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                           UPDATE PROFILE / PASSWORD                          */
+  /*                           UPDATE PROFILE / PASSWORD                        */
   /* -------------------------------------------------------------------------- */
   async updateProfile(userId: number, updateData: UpdateUserDto) {
     // FIXED: Do NOT manipulate the DTO or add plain password
@@ -111,7 +110,7 @@ export class AuthService {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                            DELETE USER WITH PASSWORD                        */
+  /*                            DELETE USER WITH PASSWORD                       */
   /* -------------------------------------------------------------------------- */
   async deleteUser(userId: number, password: string) {
     console.log(`Attempting to delete user ${userId}`);
@@ -151,7 +150,7 @@ export class AuthService {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                              HELPER METHODS                                  */
+  /*                              HELPER METHODS                                */
   /* -------------------------------------------------------------------------- */
   private generateAccessToken(user: any): string {
     const payload = {

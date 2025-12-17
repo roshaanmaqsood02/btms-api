@@ -49,8 +49,4 @@ export class RegisterDto {
   @IsOptional()
   @IsArray()
   positions?: string[];
-
-  @IsOptional()
-  @IsString()
-  profilePic?: string;
 }
