@@ -12,6 +12,7 @@ import {
   UploadedFile,
   ForbiddenException,
   Request,
+  BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -46,13 +47,62 @@ export class UsersController {
     return user;
   }
 
-  // PUT /users/:id
+  // PUT /users/:id - Only allowed for OPERATION_MANAGER or HRM
   @Put(':id')
-  async updateUser(@Param('id') id: number, @Body() dto: UpdateUserDto) {
+  async updateUser(
+    @Param('id') id: number,
+    @Body() dto: UpdateUserDto,
+    @Request() req,
+  ) {
+    // Check if user has permission
+    const allowedRoles = ['OPERATION_MANAGER', 'HRM'];
+    if (!allowedRoles.includes(req.user.systemRole)) {
+      throw new ForbiddenException(
+        'Only Operation Managers or HRM can update user information',
+      );
+    }
+
+    // Prevent self-promotion/demotion if not HRM
+    if (dto.systemRole && req.user.systemRole !== 'HRM') {
+      throw new ForbiddenException('Only HRM can change user roles');
+    }
+
+    // Get the target user
+    const targetUser = await this.usersService.findById(+id);
+    if (!targetUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    // HRM-specific validations
+    if (req.user.systemRole === 'HRM') {
+      // HRM can update anyone
+      return this.usersService.update(+id, dto);
+    }
+
+    // OPERATION_MANAGER specific restrictions
+    if (req.user.systemRole === 'OPERATION_MANAGER') {
+      // Operation Manager cannot update HRM or other Operation Managers
+      if (
+        targetUser.systemRole === 'HRM' ||
+        targetUser.systemRole === 'OPERATION_MANAGER'
+      ) {
+        throw new ForbiddenException(
+          'Operation Managers cannot update HRM or other Operation Managers',
+        );
+      }
+
+      // Operation Manager cannot change roles
+      if (dto.systemRole && dto.systemRole !== targetUser.systemRole) {
+        throw new ForbiddenException(
+          'Operation Managers cannot change user roles',
+        );
+      }
+    }
+
     return this.usersService.update(+id, dto);
   }
 
-  // ADMIN ONLY
+  // Profile picture update - Only HRM
   @Put(':id/profile-picture')
   @UseInterceptors(FileInterceptor('profilePic', profilePicMulterConfig))
   async updateUserProfilePic(
@@ -60,16 +110,22 @@ export class UsersController {
     @UploadedFile() file: Express.Multer.File,
     @Request() req,
   ) {
-    if (req.user.role !== 'admin') {
-      throw new ForbiddenException('Admins only');
+    // Only HRM can update profile pictures
+    if (req.user.systemRole !== 'HRM') {
+      throw new ForbiddenException('Only HRM can update profile pictures');
     }
 
     return this.usersService.updateProfilePic(+id, file);
   }
 
-  // DELETE /users/:id
+  // DELETE /users/:id - Only HRM
   @Delete(':id')
-  async deleteUser(@Param('id') id: number) {
+  async deleteUser(@Param('id') id: number, @Request() req) {
+    // Only HRM can delete users
+    if (req.user.systemRole !== 'HRM') {
+      throw new ForbiddenException('Only HRM can delete users');
+    }
+
     return this.usersService.deleteUser(+id);
   }
 }

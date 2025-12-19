@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsString,
   MinLength,
+  IsEnum,
 } from 'class-validator';
 
 export class UpdateUserDto {
@@ -74,6 +75,6 @@ export class UpdateUserDto {
   profilePic?: string;
 
   @IsOptional()
-  @IsString()
+  @IsEnum(['EMPLOYEE', 'PROJECT_MANAGER', 'OPERATION_MANAGER', 'HRM'])
   systemRole?: 'EMPLOYEE' | 'PROJECT_MANAGER' | 'OPERATION_MANAGER' | 'HRM';
 }
