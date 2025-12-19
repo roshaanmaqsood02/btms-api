@@ -28,6 +28,10 @@ export class UsersService {
     password: string;
     name?: string;
     gender?: string;
+    dateOfBirth?: Date;
+    bloodGroup?: string;
+    cnic?: string;
+    maritalStatus?: string;
     city?: string;
     country?: string;
     phone?: string;
@@ -35,25 +39,154 @@ export class UsersService {
     department?: string;
     projects?: string[];
     positions?: string[];
+    systemRole?: 'EMPLOYEE' | 'PROJECT_MANAGER' | 'OPERATION_MANAGER' | 'HRM';
+    profilePic?: string;
   }): Promise<User> {
-    const existingUser = await this.userRepository.findOne({
-      where: { email: data.email },
-    });
+    try {
+      // Check if user with email exists
+      const existingUserByEmail = await this.userRepository.findOne({
+        where: { email: data.email },
+      });
 
-    if (existingUser) {
-      throw new ConflictException('User with this email already exists');
+      if (existingUserByEmail) {
+        throw new ConflictException('User with this email already exists');
+      }
+
+      // Check if user with CNIC exists (if provided)
+      if (data.cnic) {
+        const existingUserByCnic = await this.userRepository.findOne({
+          where: { cnic: data.cnic },
+        });
+
+        if (existingUserByCnic) {
+          throw new ConflictException('User with this CNIC already exists');
+        }
+      }
+
+      // Get the next employee ID
+      const maxUser = await this.userRepository
+        .createQueryBuilder('user')
+        .select('MAX(user.id)', 'maxId')
+        .getRawOne();
+
+      const nextNumber = maxUser?.maxId ? parseInt(maxUser.maxId) + 1 : 1;
+      const employeeId = `EMP${String(nextNumber).padStart(3, '0')}`;
+
+      // Generate attendance ID
+      const attendanceId = `ATT${String(nextNumber).padStart(4, '0')}`;
+
+      // Hash password
+      const hashedPassword = await bcrypt.hash(data.password, 10);
+
+      // Validate system role
+      const validSystemRoles = [
+        'EMPLOYEE',
+        'PROJECT_MANAGER',
+        'OPERATION_MANAGER',
+        'HRM',
+      ];
+      const systemRole =
+        data.systemRole && validSystemRoles.includes(data.systemRole)
+          ? data.systemRole
+          : 'EMPLOYEE';
+
+      // Validate date of birth if provided
+      if (data.dateOfBirth) {
+        const dob = new Date(data.dateOfBirth);
+        if (dob > new Date()) {
+          throw new BadRequestException(
+            'Date of birth cannot be in the future',
+          );
+        }
+        // Optional: Check if user is at least 18 years old
+        const age = this.calculateAge(dob);
+        if (age < 18) {
+          throw new BadRequestException('User must be at least 18 years old');
+        }
+      }
+
+      // Validate CNIC if provided (assuming Pakistani CNIC format: 12345-1234567-1)
+      if (data.cnic) {
+        const cnicRegex = /^\d{5}-\d{7}-\d{1}$/;
+        if (!cnicRegex.test(data.cnic)) {
+          throw new BadRequestException(
+            'Invalid CNIC format. Expected: XXXXX-XXXXXXX-X',
+          );
+        }
+      }
+
+      // Validate blood group if provided
+      if (data.bloodGroup) {
+        const validBloodGroups = [
+          'A+',
+          'A-',
+          'B+',
+          'B-',
+          'AB+',
+          'AB-',
+          'O+',
+          'O-',
+        ];
+        if (!validBloodGroups.includes(data.bloodGroup.toUpperCase())) {
+          throw new BadRequestException('Invalid blood group');
+        }
+      }
+
+      // Create user
+      const user = this.userRepository.create({
+        email: data.email,
+        password: hashedPassword,
+        employeeId,
+        attendanceId,
+        uuid: uuidv4(),
+        name: data.name,
+        gender: data.gender,
+        dateOfBirth: data.dateOfBirth,
+        bloodGroup: data.bloodGroup?.toUpperCase(),
+        cnic: data.cnic,
+        maritalStatus: data.maritalStatus,
+        city: data.city,
+        country: data.country,
+        phone: data.phone,
+        postalCode: data.postalCode,
+        department: data.department,
+        projects: data.projects || [],
+        positions: data.positions || [],
+        systemRole: systemRole,
+        profilePic: data.profilePic,
+      });
+
+      // Save user
+      const savedUser = await this.userRepository.save(user);
+
+      // Return sanitized user (without password)
+      return this.sanitizeUser(savedUser);
+    } catch (error) {
+      if (
+        error instanceof ConflictException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+      console.error('Error creating user:', error);
+      throw new BadRequestException('Failed to create user');
+    }
+  }
+
+  // Helper method to calculate age
+  private calculateAge(birthDate: Date): number {
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
     }
 
-    const hashedPassword = await bcrypt.hash(data.password, 10);
-
-    const user = this.userRepository.create({
-      ...data,
-      password: hashedPassword,
-      uuid: uuidv4(),
-    });
-
-    const savedUser = await this.userRepository.save(user);
-    return this.sanitizeUser(savedUser);
+    return age;
   }
 
   /* -------------------------------------------------------------------------- */

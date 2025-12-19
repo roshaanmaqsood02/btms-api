@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsString,
   MinLength,
+  IsDateString,
 } from 'class-validator';
 
 export class RegisterDto {
@@ -14,6 +15,8 @@ export class RegisterDto {
   @MinLength(6)
   password: string;
 
+  /* ----------------------------- Basic Details ----------------------------- */
+
   @IsOptional()
   @IsString()
   name?: string;
@@ -21,6 +24,24 @@ export class RegisterDto {
   @IsOptional()
   @IsString()
   gender?: string;
+
+  @IsOptional()
+  @IsDateString()
+  dateOfBirth?: string;
+
+  @IsOptional()
+  @IsString()
+  bloodGroup?: string;
+
+  @IsOptional()
+  @IsString()
+  cnic?: string;
+
+  @IsOptional()
+  @IsString()
+  maritalStatus?: string;
+
+  /* ---------------------------- Contact Details ---------------------------- */
 
   @IsOptional()
   @IsString()
@@ -38,6 +59,8 @@ export class RegisterDto {
   @IsString()
   postalCode?: string;
 
+  /* -------------------------- Professional Details -------------------------- */
+
   @IsOptional()
   @IsString()
   department?: string;
@@ -49,4 +72,14 @@ export class RegisterDto {
   @IsOptional()
   @IsArray()
   positions?: string[];
+
+  /* ------------------------------- System ---------------------------------- */
+
+  @IsOptional()
+  @IsString()
+  systemRole?: 'EMPLOYEE' | 'PROJECT_MANAGER' | 'OPERATION_MANAGER' | 'HRM';
+
+  @IsOptional()
+  @IsString()
+  profilePic?: string;
 }

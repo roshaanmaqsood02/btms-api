@@ -7,6 +7,10 @@ import { envValidationSchema } from './config/env.validations';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { User } from './users/entities/user.entity';
+import { RequestModule } from './request/request.module';
+import { RolesGuard } from './auth/guard/roles.guard';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtStrategy } from './auth/jwt.strategy';
 
 @Module({
   imports: [
@@ -27,7 +31,7 @@ import { User } from './users/entities/user.entity';
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
         entities: [User],
-        synchronize: false,
+        synchronize: true,
         // logging: configService.get('NODE_ENV') === 'development',
       }),
       inject: [ConfigService],
@@ -35,8 +39,19 @@ import { User } from './users/entities/user.entity';
 
     UsersModule,
     AuthModule,
+    RequestModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtStrategy,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {}

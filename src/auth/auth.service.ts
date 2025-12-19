@@ -157,6 +157,7 @@ export class AuthService {
       email: user.email,
       sub: user.id,
       uuid: user.uuid,
+      systemRole: user.systemRole,
     };
 
     return this.jwtService.sign(payload, {

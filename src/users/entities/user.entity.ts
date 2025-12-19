@@ -3,6 +3,7 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
+  Index,
 } from 'typeorm';
 
 @Entity('users')
@@ -10,11 +11,24 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
+  @Index({ unique: true })
+  @Column()
   email: string;
 
   @Column()
   password: string;
+
+  /* -------------------------------------------------------------------------- */
+  /*                              Employee Details                              */
+  /* -------------------------------------------------------------------------- */
+
+  @Index({ unique: true })
+  @Column({ name: 'employee_id' })
+  employeeId: string;
+
+  @Index({ unique: true })
+  @Column({ name: 'attendance_id', nullable: true })
+  attendanceId?: string;
 
   @Column({ nullable: true })
   name?: string;
@@ -22,6 +36,21 @@ export class User {
   @Column({ nullable: true })
   gender?: string;
 
+  // Personal Details
+  @Column({ type: 'date', nullable: true, name: 'date_of_birth' })
+  dateOfBirth?: Date;
+
+  @Column({ nullable: true, name: 'blood_group' })
+  bloodGroup?: string;
+
+  @Index({ unique: true })
+  @Column({ nullable: true, name: 'cnic' })
+  cnic?: string;
+
+  @Column({ nullable: true, name: 'marital_status' })
+  maritalStatus?: string;
+
+  // Contact Details
   @Column({ nullable: true })
   city?: string;
 
@@ -34,6 +63,7 @@ export class User {
   @Column({ nullable: true, name: 'postal_code' })
   postalCode?: string;
 
+  // Professional Details
   @Column({ nullable: true })
   department?: string;
 
@@ -46,9 +76,22 @@ export class User {
   @Column({ nullable: true, name: 'profile_pic' })
   profilePic?: string;
 
+  /* -------------------------------------------------------------------------- */
+  /*                                   System                                   */
+  /* -------------------------------------------------------------------------- */
+
+  @Column({
+    type: 'enum',
+    enum: ['EMPLOYEE', 'PROJECT_MANAGER', 'OPERATION_MANAGER', 'HRM'],
+    default: 'EMPLOYEE',
+    name: 'system_role',
+  })
+  systemRole: 'EMPLOYEE' | 'PROJECT_MANAGER' | 'OPERATION_MANAGER' | 'HRM';
+
+  @Index({ unique: true })
   @Column()
   uuid: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 }

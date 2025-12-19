@@ -1,4 +1,10 @@
-import { IsArray, IsOptional, IsString, MinLength } from 'class-validator';
+import {
+  IsArray,
+  IsDateString,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -26,6 +32,22 @@ export class UpdateUserDto {
   postalCode?: string;
 
   @IsOptional()
+  @IsDateString()
+  dateOfBirth?: string;
+
+  @IsOptional()
+  @IsString()
+  bloodGroup?: string;
+
+  @IsOptional()
+  @IsString()
+  cnic?: string;
+
+  @IsOptional()
+  @IsString()
+  maritalStatus?: string;
+
+  @IsOptional()
   @IsString()
   @MinLength(6)
   currentPassword?: string;
@@ -50,4 +72,8 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   profilePic?: string;
+
+  @IsOptional()
+  @IsString()
+  systemRole?: 'EMPLOYEE' | 'PROJECT_MANAGER' | 'OPERATION_MANAGER' | 'HRM';
 }

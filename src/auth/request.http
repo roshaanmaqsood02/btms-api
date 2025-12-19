@@ -2,23 +2,28 @@
 @baseUrl = http://localhost:4000
 @contentType = application/json
 
-### 1. REGISTER a new user with all fields
+### Test 1: Create User with All New Fields
 POST {{baseUrl}}/auth/register
-Content-Type: {{contentType}}
+Content-Type: application/json
 
 {
-  "email": "test5@admin.com",
-  "password": "123456",
-  "name": "Test",
-  "gender": "male",
-  "city": "New York",
-  "country": "USA",
-  "phone": "+1234567890",
-  "postalCode": "10001",
-  "department": "Engineering",
-  "projects": ["Monitair"],
-  "positions": ["Team Lead"],
-  "profilePic": "btms-api/src/admin/roshaan_pic.jpg"
+  "email": "newuser1@gmail.com",
+  "password": "SecurePass123",
+  "name": "Test User 1",
+  "gender": "female",
+  "dateOfBirth": "1992-08-25",
+  "bloodGroup": "O+",
+  "cnic": "35201-1234567-9",
+  "maritalStatus": "married",
+  "city": "Lahore",
+  "country": "Pakistan",
+  "phone": "+923001234567",
+  "postalCode": "54000",
+  "department": "HR",
+  "projects": ["HRMS"],
+  "positions": ["HR Executive"],
+  "profilePic": "https://example.com/profile.jpg",
+  "systemRole": "HRM"
 }
 
 ### 2. LOGIN - Login with the same user

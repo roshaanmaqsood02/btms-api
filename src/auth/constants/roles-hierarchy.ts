@@ -1,0 +1,6 @@
+export const ROLE_LEVEL = {
+  HRM: 4,
+  OPERATION_MANAGER: 3,
+  PROJECT_MANAGER: 2,
+  EMPLOYEE: 1,
+};
