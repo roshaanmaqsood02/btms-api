@@ -1,58 +1,63 @@
 ### Variables
 @baseUrl = http://localhost:4000
 @contentType = application/json
+@adminEmail = roshaan@dev.com
+@adminPassword = Adminpass123!
 
-### Test 1: Create User with All New Fields
+### 1. REGISTER USER (Operation Manager)
 POST {{baseUrl}}/auth/register
-Content-Type: application/json
+Content-Type: {{contentType}}
 
 {
-  "email": "newuser1@gmail.com",
-  "password": "SecurePass123",
-  "name": "Test User 1",
-  "gender": "female",
-  "dateOfBirth": "1992-08-25",
-  "bloodGroup": "O+",
-  "cnic": "35201-1234567-9",
-  "maritalStatus": "married",
+  "email": "testuser@gmail.com",
+  "password": "123123",
+  "name": "Test User",
+  "gender": "Male",
+  "dateOfBirth": "2002-01-02",
+  "bloodGroup": "AB-",
+  "cnic": "34104-1212467-4",
+  "maritalStatus": "single",
   "city": "Lahore",
   "country": "Pakistan",
   "phone": "+923001234567",
   "postalCode": "54000",
-  "department": "HR",
-  "projects": ["HRMS"],
-  "positions": ["HR Executive"],
+  "department": "PM",
+  "projects": ["Fast Projects"],
+  "positions": ["OPERATION MANAGER"],
   "profilePic": "https://example.com/profile.jpg",
-  "systemRole": "HRM"
+  "systemRole": "EMPLOYEE"
 }
 
-### 2. LOGIN - Login with the same user
+### 2. LOGIN
 POST {{baseUrl}}/auth/login
 Content-Type: {{contentType}}
 
 {
-  "email": "test5@admin.com",
-  "password": "123456"
+  "email": "testuser@gmail.com",
+  "password": "123123"
 }
 
-### 3. GET PROFILE - Access protected route
+### 3. GET PROFILE
 GET {{baseUrl}}/auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3Q1QGFkbWluLmNvbSIsInN1YiI6OTksInV1aWQiOiJlZTJjNjU1ZC01OGJlLTRiZWItYTZlYy1iZGFjMDM1ZDA4Y2YiLCJpYXQiOjE3NjU5NTgxMzgsImV4cCI6MTc2NTk2MTczOH0.c5y4cAZx6bXnU81TBQDmxFF4ioWENIbRGarxyng-XRM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3R1c2VyQGdtYWlsLmNvbSIsInN1YiI6MTI0LCJ1dWlkIjoiM2U4MGZhOTktNGI2Mi00MTY0LWE0OTAtODU0MzI4OTdhOTNhIiwic3lzdGVtUm9sZSI6IkVNUExPWUVFIiwiaWF0IjoxNzY2MTUxMDI3LCJleHAiOjE3NjYxNTQ2Mjd9.eCljxHDT1ZFjuq3C_fSg2YmzutlCIezObVDLyOvE0HI
 
-PUT {{baseUrl}}/auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QxQGFkbWluLmNvbSIsInN1YiI6OTQsInV1aWQiOiIxNmQyNmQxNS05ZTk3LTQ0YjktYjdiZC1jNzY2YjZlOGE0ZDkiLCJpYXQiOjE3NjU5NTU2MzcsImV4cCI6MTc2NTk1OTIzN30.2dj0rLoYaFTMKP4WxKSEoJ4Ba0P_L_oWKbjeBei7tgI
-Content-Type: {{contentType}}
+### 4. UPDATE PROFILE (optional)
+PUT {{baseUrl}}/users/119
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3R1c2VyQGdtYWlsLmNvbSIsInN1YiI6MTI0LCJ1dWlkIjoiM2U4MGZhOTktNGI2Mi00MTY0LWE0OTAtODU0MzI4OTdhOTNhIiwic3lzdGVtUm9sZSI6IkVNUExPWUVFIiwiaWF0IjoxNzY2MTU1OTU4LCJleHAiOjE3NjYxNTk1NTh9.a0iVTTl4QnOI83gSjArtP3v-M28gxy6zRxigg46FOBY
+Content-Type: application/json
 
 {
-  "currentPassword": "123456",
-  "newPassword": "Adminpass123!"
+  "gender": "Male",
+  "dateOfBirth": "2002-01-02",
+  "bloodGroup": "AB-",
+  "cnic": "34104-1212467-6",
+  "maritalStatus": "single",
+  "city": "Lahore"
 }
 
-### 5. UPDATE PROFILE PICTURE - Update profile picture  
-
-### UPDATE PROFILE PICTURE
+### 5. UPDATE PROFILE PICTURE
 PUT {{baseUrl}}/auth/profile/picture
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3Q1QGFkbWluLmNvbSIsInN1YiI6OTksInV1aWQiOiJlZTJjNjU1ZC01OGJlLTRiZWItYTZlYy1iZGFjMDM1ZDA4Y2YiLCJpYXQiOjE3NjU5NTgxMzgsImV4cCI6MTc2NTk2MTczOH0.c5y4cAZx6bXnU81TBQDmxFF4ioWENIbRGarxyng-XRM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvc2hhYW5AZGV2LmNvbSIsInN1YiI6MTIyLCJ1dWlkIjoiMGFkNTI5NWMtOTFhZC00M2M1LTlmYWQtMWQ5YzE2MDU1MWM1Iiwic3lzdGVtUm9sZSI6Ik9QRVJBVElPTl9NQU5BR0VSIiwiaWF0IjoxNzY2MTQ5MTk0LCJleHAiOjE3NjYxNTI3OTR9.fOfBkNwrZseHlFQFpaHuB9cEiVwkqiWA3GVq40K-NoY
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
 
 ------WebKitFormBoundary
@@ -62,12 +67,30 @@ Content-Type: image/jpeg
 < ./src/admin/roshaan_pic.jpg
 ------WebKitFormBoundary--
 
+### 6. DELETE ANOTHER USER (Operation Manager deletes another user)
+DELETE {{baseUrl}}/users/119
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvc2hhYW5AZGV2LmNvbSIsInN1YiI6MTIzLCJ1dWlkIjoiMTExYWMxNGYtNzkyZi00NTkzLWEwYWUtODJkODM5ZDE1NGI2Iiwic3lzdGVtUm9sZSI6Ik9QRVJBVElPTl9NQU5BR0VSIiwiaWF0IjoxNzY2MTUxMTc1LCJleHAiOjE3NjYxNTQ3NzV9.FeVyDwTF-FVbUMWJ6kx9VKVajgw1ePK1yjvYxX2PvRs
 
-### 6. DELETE ACCOUNT
+### 7. ATTEMPT TO DELETE SELF (Should fail)
+DELETE {{baseUrl}}/users/122 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvc2hhYW5AZGV2LmNvbSIsInN1YiI6MTIyLCJ1dWlkIjoiMGFkNTI5NWMtOTFhZC00M2M1LTlmYWQtMWQ5YzE2MDU1MWM1Iiwic3lzdGVtUm9sZSI6Ik9QRVJBVElPTl9NQU5BR0VSIiwiaWF0IjoxNzY2MTQ5MTk0LCJleHAiOjE3NjYxNTI3OTR9.fOfBkNwrZseHlFQFpaHuB9cEiVwkqiWA3GVq40K-NoY
+
+### Expected response for self-deletion attempt:
+# {
+#   "statusCode": 403,
+#   "message": "You cannot delete your own account"
+# }
+
+### 8. DELETE MY OWN ACCOUNT VIA /auth/profile
 DELETE {{baseUrl}}/auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QxQGFkbWluLmNvbSIsInN1YiI6OTQsInV1aWQiOiIxNmQyNmQxNS05ZTk3LTQ0YjktYjdiZC1jNzY2YjZlOGE0ZDkiLCJpYXQiOjE3NjU5NTU2MzcsImV4cCI6MTc2NTk1OTIzN30.2dj0rLoYaFTMKP4WxKSEoJ4Ba0P_L_oWKbjeBei7tgI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvc2hhYW5AZGV2LmNvbSIsInN1YiI6MTIyLCJ1dWlkIjoiMGFkNTI5NWMtOTFhZC00M2M1LTlmYWQtMWQ5YzE2MDU1MWM1Iiwic3lzdGVtUm9sZSI6Ik9QRVJBVElPTl9NQU5BR0VSIiwiaWF0IjoxNzY2MTQ5MTk0LCJleHAiOjE3NjYxNTI3OTR9.fOfBkNwrZseHlFQFpaHuB9cEiVwkqiWA3GVq40K-NoY
 Content-Type: {{contentType}}
 
 {
-  "password": "Adminpass123!"
+  "password": "{{adminPassword}}"
 }
+
+### Expected response for correct self-deletion
+# {
+#   "message": "Account deleted successfully"
+# }

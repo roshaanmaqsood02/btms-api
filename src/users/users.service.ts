@@ -73,7 +73,7 @@ export class UsersService {
       const employeeId = `EMP${String(nextNumber).padStart(3, '0')}`;
 
       // Generate attendance ID
-      const attendanceId = `ATT${String(nextNumber).padStart(4, '0')}`;
+      const attendanceId = `${String(nextNumber).padStart(3, '0')}`;
 
       // Hash password
       const hashedPassword = await bcrypt.hash(data.password, 10);
@@ -269,7 +269,7 @@ export class UsersService {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new NotFoundException('User not found');
 
-    // Password update logic
+    // Password update
     if (dto.currentPassword || dto.newPassword) {
       if (!dto.currentPassword || !dto.newPassword) {
         throw new BadRequestException(
@@ -290,21 +290,32 @@ export class UsersService {
         throw new BadRequestException('Current password is incorrect');
       }
 
-      // Hash the new password
       user.password = await bcrypt.hash(dto.newPassword, 10);
 
-      // Clean password fields from DTO to prevent any accidental overwrite
       delete (dto as any).currentPassword;
       delete (dto as any).newPassword;
     }
 
-    // Update other fields (skip password, current/newPassword)
+    if (dto.dateOfBirth) {
+      user.dateOfBirth = new Date(dto.dateOfBirth);
+      delete (dto as any).dateOfBirth;
+    }
+
+    if (dto.projects && !Array.isArray(dto.projects)) {
+      dto.projects = [dto.projects];
+    }
+
+    if (dto.positions && !Array.isArray(dto.positions)) {
+      dto.positions = [dto.positions];
+    }
+
+    // Update remaining fields
     Object.keys(dto).forEach((key) => {
       if (
         dto[key] !== undefined &&
         key !== 'currentPassword' &&
         key !== 'newPassword' &&
-        key !== 'password' // Extra safety
+        key !== 'password'
       ) {
         user[key] = dto[key];
       }
@@ -313,6 +324,7 @@ export class UsersService {
     const updatedUser = await this.userRepository.save(user);
     return this.sanitizeUser(updatedUser);
   }
+
   async updatePassword(
     id: number,
     currentPassword: string,
@@ -366,10 +378,21 @@ export class UsersService {
 
   async deleteUser(id: number): Promise<{ message: string }> {
     const user = await this.userRepository.findOne({ where: { id } });
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
 
-    await this.userRepository.remove(user);
-    return { message: 'User deleted successfully' };
+    // You might want to add additional checks here:
+    // - Check if user is active
+    // - Check if user has dependencies (projects, etc.)
+
+    try {
+      await this.userRepository.remove(user);
+      return { message: 'User deleted successfully' };
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      throw new BadRequestException('Failed to delete user');
+    }
   }
 
   /* -------------------------------------------------------------------------- */
