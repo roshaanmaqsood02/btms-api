@@ -2,11 +2,14 @@ import {
   Injectable,
   UnauthorizedException,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UsersService } from 'src/users/users.service';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
+import { RegisterDto } from 'src/users/dto';
+import { UserSystemRole } from 'src/utils/enum';
 
 @Injectable()
 export class AuthService {
@@ -18,27 +21,18 @@ export class AuthService {
   /* -------------------------------------------------------------------------- */
   /*                                REGISTER                                    */
   /* -------------------------------------------------------------------------- */
-  async register(data: {
-    email: string;
-    password: string;
-    name?: string;
-    gender?: string;
-    city?: string;
-    country?: string;
-    phone?: string;
-    postalCode?: string;
-    department?: string;
-    projects?: string[];
-    positions?: string[];
-  }) {
-    const user = await this.userService.create(data);
+  async register(data: RegisterDto, requester: { systemRole: UserSystemRole }) {
+    if (requester.systemRole !== 'HRM') {
+      throw new ForbiddenException('Only HRM can create users');
+    }
 
-    const accessToken = this.generateAccessToken(user);
+    const user = await this.userService.create({
+      ...data,
+      dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
+      systemRole: data.systemRole ?? 'EMPLOYEE',
+    });
 
-    return {
-      ...user,
-      accessToken,
-    };
+    return user;
   }
 
   /* -------------------------------------------------------------------------- */

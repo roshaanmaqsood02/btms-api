@@ -8,6 +8,8 @@ import {
 } from 'class-validator';
 
 export class UpdateUserDto {
+  /* -------------------------- Basic Details -------------------------- */
+
   @IsOptional()
   @IsString()
   name?: string;
@@ -15,6 +17,8 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   gender?: string;
+
+  /* -------------------------- Contact Details -------------------------- */
 
   @IsOptional()
   @IsString()
@@ -48,15 +52,7 @@ export class UpdateUserDto {
   @IsString()
   maritalStatus?: string;
 
-  @IsOptional()
-  @IsString()
-  @MinLength(6)
-  currentPassword?: string;
-
-  @IsOptional()
-  @IsString()
-  @MinLength(6)
-  newPassword?: string;
+  /* -------------------------- Professional Details -------------------------- */
 
   @IsOptional()
   @IsString()
@@ -72,7 +68,19 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
+  @MinLength(6)
+  currentPassword?: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(6)
+  newPassword?: string;
+
+  @IsOptional()
+  @IsString()
   profilePic?: string;
+
+  /* ------------------------------- System ---------------------------------- */
 
   @IsOptional()
   @IsEnum(['EMPLOYEE', 'PROJECT_MANAGER', 'OPERATION_MANAGER', 'HRM'])

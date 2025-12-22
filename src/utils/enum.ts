@@ -1,7 +1,5 @@
-export enum SystemRole {
-  EMPLOYEE = 'EMPLOYEE',
-  OPERATION_MANAGER = 'OPERATION_MANAGER',
-  PROJECT_MANAGER = 'PROJECT_MANAGER',
-  HRM = 'HRM',
-  ADMIN = 'ADMIN',
-}
+export type UserSystemRole =
+  | 'EMPLOYEE'
+  | 'PROJECT_MANAGER'
+  | 'OPERATION_MANAGER'
+  | 'HRM';

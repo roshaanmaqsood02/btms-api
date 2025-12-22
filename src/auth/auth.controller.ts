@@ -37,11 +37,11 @@ export class AuthController {
   /* -------------------------------------------------------------------------- */
   /*                                REGISTER                                    */
   /* -------------------------------------------------------------------------- */
-  @Post('register')
-  @UsePipes(new ValidationPipe({ whitelist: true }))
-  async register(@Body() registerDto: RegisterDto) {
-    return this.authService.register(registerDto);
-  }
+  // @Post('register')
+  // @UsePipes(new ValidationPipe({ whitelist: true }))
+  // async register(@Body() registerDto: RegisterDto) {
+  //   return this.authService.register(registerDto);
+  // }
 
   /* -------------------------------------------------------------------------- */
   /*                                  LOGIN                                     */

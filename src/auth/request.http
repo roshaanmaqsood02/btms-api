@@ -1,49 +1,62 @@
 ### Variables
 @baseUrl = http://localhost:4000
 @contentType = application/json
+
+### OPERATION MANAGER CREDENTIALS
 @adminEmail = roshaan@dev.com
 @adminPassword = Adminpass123!
 
-### 1. REGISTER USER (Operation Manager)
-POST {{baseUrl}}/auth/register
+### HRM ADMIN CREDENTIALS
+@hrmEmail = mahrukh@gmail.com
+@hrmPassword = AdminPass123!
+
+### EMPLOYEE CREDENTIALS
+@employeeEmail = shawaizsaeed@gmail.com
+@employeePassword = Adminpass123!
+
+### 1. REGISTER USER (Only HRM)
+POST {{baseUrl}}/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1haHJ1a2hAZ21haWwuY29tIiwic3ViIjoxMjUsInV1aWQiOiJmOGY1NWMzNi02M2Y2LTRmM2YtOGVlMC04ODVmYjFmZmE5ZTEiLCJzeXN0ZW1Sb2xlIjoiSFJNIiwiaWF0IjoxNzY2Mzk0NjcyLCJleHAiOjE3NjYzOTgyNzJ9.q5uLp4vWCtTYqhDxsJZcYGmCV2DXkJWqeBDhmHYCTCE
 Content-Type: {{contentType}}
 
 {
-  "email": "testuser@gmail.com",
-  "password": "123123",
-  "name": "Test User",
+  "email": "pm@bracketsltd.email",
+  "password": "{{employeePassword}}",
+  "name": "Shahbaz Salvi",
   "gender": "Male",
-  "dateOfBirth": "2002-01-02",
-  "bloodGroup": "AB-",
-  "cnic": "34104-1212467-4",
+  "dateOfBirth": "2000-11-21",
+  "bloodGroup": "O+",
+  "cnic": "34103-1227468-3",
   "maritalStatus": "single",
-  "city": "Lahore",
+  "city": "Gujranwala",
   "country": "Pakistan",
-  "phone": "+923001234567",
+  "phone": "+923001234565",
   "postalCode": "54000",
-  "department": "PM",
+  "department": "Development",
   "projects": ["Fast Projects"],
-  "positions": ["OPERATION MANAGER"],
+  "positions": ["Project Manager"],
   "profilePic": "https://example.com/profile.jpg",
-  "systemRole": "EMPLOYEE"
+  "systemRole": "PROJECT_MANAGER"
 }
+
+
 
 ### 2. LOGIN
 POST {{baseUrl}}/auth/login
 Content-Type: {{contentType}}
 
 {
-  "email": "testuser@gmail.com",
-  "password": "123123"
+  "email": "{{hrmEmail}}",
+  "password": "{{hrmPassword}}"
 }
 
 ### 3. GET PROFILE
 GET {{baseUrl}}/auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3R1c2VyQGdtYWlsLmNvbSIsInN1YiI6MTI0LCJ1dWlkIjoiM2U4MGZhOTktNGI2Mi00MTY0LWE0OTAtODU0MzI4OTdhOTNhIiwic3lzdGVtUm9sZSI6IkVNUExPWUVFIiwiaWF0IjoxNzY2MTUxMDI3LCJleHAiOjE3NjYxNTQ2Mjd9.eCljxHDT1ZFjuq3C_fSg2YmzutlCIezObVDLyOvE0HI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNoYXdhaXpzYWVlZEBnbWFpbC5jb20iLCJzdWIiOjEyNiwidXVpZCI6IjNlYjgxZTM4LWEzYTctNDE2NC1hZWQ2LTg1ZGVkNzNiMjlkZiIsInN5c3RlbVJvbGUiOiJFTVBMT1lFRSIsImlhdCI6MTc2NjM1Nzg1NiwiZXhwIjoxNzY2MzYxNDU2fQ.ckXpnVRxJPDa4z6RaN0xLqTKNKwNIPRy_Q51CoE1SMo
 
 ### 4. UPDATE PROFILE (optional)
 PUT {{baseUrl}}/users/119
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3R1c2VyQGdtYWlsLmNvbSIsInN1YiI6MTI0LCJ1dWlkIjoiM2U4MGZhOTktNGI2Mi00MTY0LWE0OTAtODU0MzI4OTdhOTNhIiwic3lzdGVtUm9sZSI6IkVNUExPWUVFIiwiaWF0IjoxNzY2MTU1OTU4LCJleHAiOjE3NjYxNTk1NTh9.a0iVTTl4QnOI83gSjArtP3v-M28gxy6zRxigg46FOBY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNoYXdhaXpzYWVlZEBnbWFpbC5jb20iLCJzdWIiOjEyNiwidXVpZCI6IjNlYjgxZTM4LWEzYTctNDE2NC1hZWQ2LTg1ZGVkNzNiMjlkZiIsInN5c3RlbVJvbGUiOiJFTVBMT1lFRSIsImlhdCI6MTc2NjM1Nzg1NiwiZXhwIjoxNzY2MzYxNDU2fQ.ckXpnVRxJPDa4z6RaN0xLqTKNKwNIPRy_Q51CoE1SMo
 Content-Type: application/json
 
 {
@@ -52,7 +65,7 @@ Content-Type: application/json
   "bloodGroup": "AB-",
   "cnic": "34104-1212467-6",
   "maritalStatus": "single",
-  "city": "Lahore"
+  "city": "Gujranwala"
 }
 
 ### 5. UPDATE PROFILE PICTURE
@@ -68,9 +81,8 @@ Content-Type: image/jpeg
 ------WebKitFormBoundary--
 
 ### 6. DELETE ANOTHER USER (Operation Manager deletes another user)
-DELETE {{baseUrl}}/users/119
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvc2hhYW5AZGV2LmNvbSIsInN1YiI6MTIzLCJ1dWlkIjoiMTExYWMxNGYtNzkyZi00NTkzLWEwYWUtODJkODM5ZDE1NGI2Iiwic3lzdGVtUm9sZSI6Ik9QRVJBVElPTl9NQU5BR0VSIiwiaWF0IjoxNzY2MTUxMTc1LCJleHAiOjE3NjYxNTQ3NzV9.FeVyDwTF-FVbUMWJ6kx9VKVajgw1ePK1yjvYxX2PvRs
-
+DELETE {{baseUrl}}/users/121
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1haHJ1a2hAZ21haWwuY29tIiwic3ViIjoxMjUsInV1aWQiOiJmOGY1NWMzNi02M2Y2LTRmM2YtOGVlMC04ODVmYjFmZmE5ZTEiLCJzeXN0ZW1Sb2xlIjoiSFJNIiwiaWF0IjoxNzY2MzU4MTg4LCJleHAiOjE3NjYzNjE3ODh9.1y9nhLHM6PJWR6fxgSS-OU7u7JcejVo7CrZ2o3_RjuQ
 ### 7. ATTEMPT TO DELETE SELF (Should fail)
 DELETE {{baseUrl}}/users/122 
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvc2hhYW5AZGV2LmNvbSIsInN1YiI6MTIyLCJ1dWlkIjoiMGFkNTI5NWMtOTFhZC00M2M1LTlmYWQtMWQ5YzE2MDU1MWM1Iiwic3lzdGVtUm9sZSI6Ik9QRVJBVElPTl9NQU5BR0VSIiwiaWF0IjoxNzY2MTQ5MTk0LCJleHAiOjE3NjYxNTI3OTR9.fOfBkNwrZseHlFQFpaHuB9cEiVwkqiWA3GVq40K-NoY

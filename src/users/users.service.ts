@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ConfigService } from '@nestjs/config';
+import { UserSystemRole } from 'src/utils/enum';
 
 @Injectable()
 export class UsersService {
@@ -85,10 +86,7 @@ export class UsersService {
         'OPERATION_MANAGER',
         'HRM',
       ];
-      const systemRole =
-        data.systemRole && validSystemRoles.includes(data.systemRole)
-          ? data.systemRole
-          : 'EMPLOYEE';
+      const systemRole: UserSystemRole = data.systemRole ?? 'EMPLOYEE';
 
       // Validate date of birth if provided
       if (data.dateOfBirth) {

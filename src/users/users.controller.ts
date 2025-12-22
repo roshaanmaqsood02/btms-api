@@ -12,18 +12,37 @@ import {
   UploadedFile,
   ForbiddenException,
   Request,
-  BadRequestException,
+  Post,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { profilePicMulterConfig } from 'src/common/multer.config';
 import { AuthGuard } from '@nestjs/passport';
+import { RegisterDto } from './dto';
+
+/* -------------------------------------------------------------------------- */
+/*                                Create User Only HRM                        */
+/* -------------------------------------------------------------------------- */
 
 @Controller('users')
 @UseGuards(AuthGuard('jwt'))
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Post()
+  @UseGuards(AuthGuard('jwt'))
+  async createUser(@Body() dto: RegisterDto, @Request() req) {
+    if (req.user.systemRole !== 'HRM') {
+      throw new ForbiddenException('Only HRM can create users');
+    }
+
+    return this.usersService.create({
+      ...dto,
+      dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : undefined,
+      systemRole: dto.systemRole ?? 'EMPLOYEE',
+    });
+  }
 
   // GET /users?page=1&limit=10&search=
   @Get()
@@ -39,6 +58,10 @@ export class UsersController {
     });
   }
 
+  /* -------------------------------------------------------------------------- */
+  /*                                Get User By ID                              */
+  /* -------------------------------------------------------------------------- */
+
   // GET /users/:id
   @Get(':id')
   async getUserById(@Param('id') id: number) {
@@ -46,6 +69,10 @@ export class UsersController {
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
+
+  /* -------------------------------------------------------------------------- */
+  /*                     Update USER By OPERATION_MANAGER or HRM                */
+  /* -------------------------------------------------------------------------- */
 
   // PUT /users/:id - Only allowed for OPERATION_MANAGER or HRM
   @Put(':id')
@@ -102,6 +129,10 @@ export class UsersController {
     return this.usersService.update(+id, dto);
   }
 
+  /* -------------------------------------------------------------------------- */
+  /*                       Update Profile Picture By HRM                        */
+  /* -------------------------------------------------------------------------- */
+
   // Profile picture update - Only HRM
   @Put(':id/profile-picture')
   @UseInterceptors(FileInterceptor('profilePic', profilePicMulterConfig))
@@ -117,6 +148,10 @@ export class UsersController {
 
     return this.usersService.updateProfilePic(+id, file);
   }
+
+  /* -------------------------------------------------------------------------- */
+  /*                           DELETE User Only HRM                             */
+  /* -------------------------------------------------------------------------- */
 
   // DELETE /users/:id - Only HRM
   @Delete(':id')
