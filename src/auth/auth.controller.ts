@@ -14,6 +14,7 @@ import {
   UploadedFile,
   UseInterceptors,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -90,14 +91,31 @@ export class AuthController {
   async updateProfilePicture(
     @Request() req,
     @UploadedFile() file: Express.Multer.File,
+    @Body() body?: any, // Accept any body to check for userId
   ) {
     if (!file) {
       throw new BadRequestException('Profile picture is required');
     }
 
+    const currentUser = req.user;
+    let targetUserId = currentUser.id;
+
+    // Check if admin is updating someone else's picture
+    if (body && body.userId && body.userId !== currentUser.id) {
+      const allowedRoles = ['HRM', 'OPERATION_MANAGER', 'PROJECT_MANAGER'];
+
+      if (!allowedRoles.includes(currentUser.systemRole)) {
+        throw new ForbiddenException(
+          'You can only update your own profile picture',
+        );
+      }
+
+      targetUserId = body.userId;
+    }
+
     return {
       message: 'Profile picture updated successfully',
-      user: await this.usersService.updateProfilePic(req.user.id, file),
+      user: await this.usersService.updateProfilePic(targetUserId, file),
     };
   }
 

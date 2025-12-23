@@ -10,33 +10,35 @@
 @hrmEmail = mahrukh@gmail.com
 @hrmPassword = AdminPass123!
 
+### PROJECT MAN
+
 ### EMPLOYEE CREDENTIALS
 @employeeEmail = shawaizsaeed@gmail.com
 @employeePassword = Adminpass123!
 
 ### 1. REGISTER USER (Only HRM)
 POST {{baseUrl}}/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1haHJ1a2hAZ21haWwuY29tIiwic3ViIjoxMjUsInV1aWQiOiJmOGY1NWMzNi02M2Y2LTRmM2YtOGVlMC04ODVmYjFmZmE5ZTEiLCJzeXN0ZW1Sb2xlIjoiSFJNIiwiaWF0IjoxNzY2Mzk0NjcyLCJleHAiOjE3NjYzOTgyNzJ9.q5uLp4vWCtTYqhDxsJZcYGmCV2DXkJWqeBDhmHYCTCE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1haHJ1a2hAZ21haWwuY29tIiwic3ViIjoxMjUsInV1aWQiOiJmOGY1NWMzNi02M2Y2LTRmM2YtOGVlMC04ODVmYjFmZmE5ZTEiLCJzeXN0ZW1Sb2xlIjoiSFJNIiwiaWF0IjoxNzY2NDcyMTIzLCJleHAiOjE3NjY0NzU3MjN9.O74hDlv6qXFJAht0o_67kKSCBxiHa0qZXoBRzS5x8lo
 Content-Type: {{contentType}}
 
 {
-  "email": "pm@bracketsltd.email",
+  "email": "hr@bracketsltd.email",
   "password": "{{employeePassword}}",
-  "name": "Shahbaz Salvi",
-  "gender": "Male",
+  "name": "HR Manager",
+  "gender": "Female",
   "dateOfBirth": "2000-11-21",
   "bloodGroup": "O+",
-  "cnic": "34103-1227468-3",
-  "maritalStatus": "single",
+  "cnic": "34103-4527468-3",
+  "maritalStatus": "Single",
   "city": "Gujranwala",
   "country": "Pakistan",
   "phone": "+923001234565",
   "postalCode": "54000",
-  "department": "Development",
-  "projects": ["Fast Projects"],
-  "positions": ["Project Manager"],
+  "department": "HRM",
+  "projects": ["None"],
+  "positions": ["HR Manager"],
   "profilePic": "https://example.com/profile.jpg",
-  "systemRole": "PROJECT_MANAGER"
+  "systemRole": "HRM"
 }
 
 
@@ -51,12 +53,17 @@ Content-Type: {{contentType}}
 }
 
 ### 3. GET PROFILE
-GET {{baseUrl}}/auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNoYXdhaXpzYWVlZEBnbWFpbC5jb20iLCJzdWIiOjEyNiwidXVpZCI6IjNlYjgxZTM4LWEzYTctNDE2NC1hZWQ2LTg1ZGVkNzNiMjlkZiIsInN5c3RlbVJvbGUiOiJFTVBMT1lFRSIsImlhdCI6MTc2NjM1Nzg1NiwiZXhwIjoxNzY2MzYxNDU2fQ.ckXpnVRxJPDa4z6RaN0xLqTKNKwNIPRy_Q51CoE1SMo
+GET {{baseUrl}}/auth/profile/126
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1haHJ1a2hAZ21haWwuY29tIiwic3ViIjoxMjUsInV1aWQiOiJmOGY1NWMzNi02M2Y2LTRmM2YtOGVlMC04ODVmYjFmZmE5ZTEiLCJzeXN0ZW1Sb2xlIjoiSFJNIiwiaWF0IjoxNzY2NDA3OTIwLCJleHAiOjE3NjY0MTE1MjB9.Ezsdhp1nsdWQUvj74HJkqa1gSOidpvKM9aT2Wy9I_aw
+
+
+### 4. GET Other User Profile
+GET {{baseUrl}}/users/126
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1haHJ1a2hAZ21haWwuY29tIiwic3ViIjoxMjUsInV1aWQiOiJmOGY1NWMzNi02M2Y2LTRmM2YtOGVlMC04ODVmYjFmZmE5ZTEiLCJzeXN0ZW1Sb2xlIjoiSFJNIiwiaWF0IjoxNzY2NDE0OTcxLCJleHAiOjE3NjY0MTg1NzF9.8J2b5Lx1S4blkVHM3fXC5fwZHqCey3xHbzwEc7aQiu4
 
 ### 4. UPDATE PROFILE (optional)
-PUT {{baseUrl}}/users/119
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNoYXdhaXpzYWVlZEBnbWFpbC5jb20iLCJzdWIiOjEyNiwidXVpZCI6IjNlYjgxZTM4LWEzYTctNDE2NC1hZWQ2LTg1ZGVkNzNiMjlkZiIsInN5c3RlbVJvbGUiOiJFTVBMT1lFRSIsImlhdCI6MTc2NjM1Nzg1NiwiZXhwIjoxNzY2MzYxNDU2fQ.ckXpnVRxJPDa4z6RaN0xLqTKNKwNIPRy_Q51CoE1SMo
+PUT {{baseUrl}}/users/126
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1haHJ1a2hAZ21haWwuY29tIiwic3ViIjoxMjUsInV1aWQiOiJmOGY1NWMzNi02M2Y2LTRmM2YtOGVlMC04ODVmYjFmZmE5ZTEiLCJzeXN0ZW1Sb2xlIjoiSFJNIiwiaWF0IjoxNzY2NDE0OTcxLCJleHAiOjE3NjY0MTg1NzF9.8J2b5Lx1S4blkVHM3fXC5fwZHqCey3xHbzwEc7aQiu4
 Content-Type: application/json
 
 {
@@ -64,7 +71,7 @@ Content-Type: application/json
   "dateOfBirth": "2002-01-02",
   "bloodGroup": "AB-",
   "cnic": "34104-1212467-6",
-  "maritalStatus": "single",
+  "maritalStatus": "Single",
   "city": "Gujranwala"
 }
 

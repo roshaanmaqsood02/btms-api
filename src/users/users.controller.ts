@@ -130,10 +130,10 @@ export class UsersController {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                       Update Profile Picture By HRM                        */
+  /*                           Update Profile Picture                           */
   /* -------------------------------------------------------------------------- */
 
-  // Profile picture update - Only HRM
+  // Profile picture update
   @Put(':id/profile-picture')
   @UseInterceptors(FileInterceptor('profilePic', profilePicMulterConfig))
   async updateUserProfilePic(
@@ -141,12 +141,57 @@ export class UsersController {
     @UploadedFile() file: Express.Multer.File,
     @Request() req,
   ) {
-    // Only HRM can update profile pictures
-    if (req.user.systemRole !== 'HRM') {
-      throw new ForbiddenException('Only HRM can update profile pictures');
+    const currentUser = req.user;
+    const targetUserId = +id;
+
+    // 1. Everyone can update their OWN profile picture
+    if (currentUser.id === targetUserId) {
+      return this.usersService.updateProfilePic(targetUserId, file);
     }
 
-    return this.usersService.updateProfilePic(+id, file);
+    // 2. Check if current user is HRM/OM/PM to update others
+    const managerRoles = ['HRM', 'OPERATION_MANAGER', 'PROJECT_MANAGER'];
+
+    if (!managerRoles.includes(currentUser.systemRole)) {
+      throw new ForbiddenException(
+        'You can only update your own profile picture',
+      );
+    }
+
+    // 3. For PM - check if target user is in their projects
+    if (currentUser.systemRole === 'PROJECT_MANAGER') {
+      const canUpdate = await this.usersService.canPmUpdateUser(
+        targetUserId,
+        currentUser.id,
+      );
+
+      if (!canUpdate) {
+        throw new ForbiddenException(
+          'You can only update profile pictures for users in your projects',
+        );
+      }
+    }
+
+    // 4. For OM - check if target user is in their operations
+    if (currentUser.systemRole === 'OPERATION_MANAGER') {
+      const canUpdate = await this.usersService.canOmUpdateUser(
+        targetUserId,
+        currentUser.id,
+      );
+
+      if (!canUpdate) {
+        throw new ForbiddenException(
+          'You can only update profile pictures for users in your operations',
+        );
+      }
+    }
+
+    console.log('Profile picture update called for user:', id);
+    console.log('File received:', file?.filename);
+    console.log('Current user:', req.user.id);
+
+    // 5. HRM can update anyone (no additional checks needed)
+    return this.usersService.updateProfilePic(targetUserId, file);
   }
 
   /* -------------------------------------------------------------------------- */

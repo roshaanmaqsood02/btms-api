@@ -371,6 +371,51 @@ export class UsersService {
   }
 
   /* -------------------------------------------------------------------------- */
+  /*                          SIMPLIFIED PERMISSION CHECK                       */
+  /* -------------------------------------------------------------------------- */
+
+  /**
+   * Check if Project Manager can update a user's profile picture
+   * Simplified version - allows PM to update any user
+   */
+  async canPmUpdateUser(targetUserId: number, pmId: number): Promise<boolean> {
+    try {
+      // Check if the PM exists
+      const projectManager = await this.userRepository.findOne({
+        where: {
+          id: pmId,
+          systemRole: 'PROJECT_MANAGER',
+        },
+      });
+
+      return !!projectManager; // If PM exists, allow update
+    } catch (error) {
+      console.error('Error checking PM permission:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Check if Operation Manager can update a user's profile picture
+   * Simplified version - allows OM to update any user
+   */
+  async canOmUpdateUser(targetUserId: number, omId: number): Promise<boolean> {
+    try {
+      // Check if the OM exists
+      const operationManager = await this.userRepository.findOne({
+        where: {
+          id: omId,
+          systemRole: 'OPERATION_MANAGER',
+        },
+      });
+
+      return !!operationManager; // If OM exists, allow update
+    } catch (error) {
+      console.error('Error checking OM permission:', error);
+      return false;
+    }
+  }
+  /* -------------------------------------------------------------------------- */
   /*                                DELETE USER                                 */
   /* -------------------------------------------------------------------------- */
 
