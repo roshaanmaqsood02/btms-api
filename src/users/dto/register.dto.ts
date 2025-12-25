@@ -77,7 +77,16 @@ export class RegisterDto {
 
   @IsOptional()
   @IsString()
-  systemRole?: 'EMPLOYEE' | 'PROJECT_MANAGER' | 'OPERATION_MANAGER' | 'HRM';
+  systemRole?:
+    | 'EMPLOYEE'
+    | 'PROJECT_MANAGER'
+    | 'OPERATION_MANAGER'
+    | 'HRM'
+    | 'ADMIN'
+    | 'CEO'
+    | 'CTO'
+    | 'STAFF'
+    | 'INTERNS';
 
   @IsOptional()
   @IsString()

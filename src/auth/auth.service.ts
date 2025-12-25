@@ -22,8 +22,23 @@ export class AuthService {
   /*                                REGISTER                                    */
   /* -------------------------------------------------------------------------- */
   async register(data: RegisterDto, requester: { systemRole: UserSystemRole }) {
-    if (requester.systemRole !== 'HRM') {
-      throw new ForbiddenException('Only HRM can create users');
+    // Allow HRM and ADMIN to create users
+    if (requester.systemRole !== 'HRM' && requester.systemRole !== 'ADMIN') {
+      throw new ForbiddenException('Only HRM or ADMIN can create users');
+    }
+
+    // ADMIN can create any role, HRM can only create EMPLOYEE, PROJECT_MANAGER, OPERATION_MANAGER
+    if (requester.systemRole === 'HRM') {
+      const hrAllowedRoles = [
+        'EMPLOYEE',
+        'PROJECT_MANAGER',
+        'OPERATION_MANAGER',
+      ];
+      if (data.systemRole && !hrAllowedRoles.includes(data.systemRole)) {
+        throw new ForbiddenException(
+          'HRM can only create EMPLOYEE, PROJECT_MANAGER, or OPERATION_MANAGER roles',
+        );
+      }
     }
 
     const user = await this.userService.create({

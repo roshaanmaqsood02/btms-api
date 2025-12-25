@@ -47,16 +47,20 @@ export class AuthController {
       loginDto.password,
     );
 
-    // Set the token in HTTP-only cookie
+    console.log(
+      'Login successful, setting cookie with token:',
+      result.accessToken?.substring(0, 20) + '...',
+    );
+
     res.cookie('access_token', result.accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-      sameSite: 'lax', // or 'strict' based on your needs
-      maxAge: 60 * 60 * 1000, // 1 hour in milliseconds
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 1000,
       path: '/',
+      domain: 'localhost', // Add this for localhost
     });
 
-    // Remove the token from the response body for security
     const { accessToken, ...userWithoutToken } = result;
 
     return {
@@ -105,7 +109,7 @@ export class AuthController {
   /* -------------------------------------------------------------------------- */
   /*                       UPDATE PROFILE PICTURE                               */
   /* -------------------------------------------------------------------------- */
-  @UseGuards(JwtCookieGuard) // Use the new guard
+  @UseGuards(JwtCookieGuard)
   @Put('profile/picture')
   @UseInterceptors(FileInterceptor('profilePic', profilePicMulterConfig))
   async updateProfilePicture(
@@ -121,7 +125,12 @@ export class AuthController {
     let targetUserId = currentUser.id;
 
     if (body && body.userId && body.userId !== currentUser.id) {
-      const allowedRoles = ['HRM', 'OPERATION_MANAGER', 'PROJECT_MANAGER'];
+      const allowedRoles = [
+        'ADMIN',
+        'HRM',
+        'OPERATION_MANAGER',
+        'PROJECT_MANAGER',
+      ];
 
       if (!allowedRoles.includes(currentUser.systemRole)) {
         throw new ForbiddenException(

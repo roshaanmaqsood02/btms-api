@@ -82,11 +82,30 @@ export class User {
 
   @Column({
     type: 'enum',
-    enum: ['EMPLOYEE', 'PROJECT_MANAGER', 'OPERATION_MANAGER', 'HRM'],
+    enum: [
+      'EMPLOYEE',
+      'PROJECT_MANAGER',
+      'OPERATION_MANAGER',
+      'HRM',
+      'ADMIN',
+      'CEO',
+      'CTO',
+      'STAFF',
+      'INTERNS',
+    ],
     default: 'EMPLOYEE',
     name: 'system_role',
   })
-  systemRole: 'EMPLOYEE' | 'PROJECT_MANAGER' | 'OPERATION_MANAGER' | 'HRM';
+  systemRole:
+    | 'EMPLOYEE'
+    | 'PROJECT_MANAGER'
+    | 'OPERATION_MANAGER'
+    | 'HRM'
+    | 'ADMIN'
+    | 'CEO'
+    | 'CTO'
+    | 'STAFF'
+    | 'INTERNS';
 
   @Index({ unique: true })
   @Column()

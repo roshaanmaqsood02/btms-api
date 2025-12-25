@@ -83,6 +83,25 @@ export class UpdateUserDto {
   /* ------------------------------- System ---------------------------------- */
 
   @IsOptional()
-  @IsEnum(['EMPLOYEE', 'PROJECT_MANAGER', 'OPERATION_MANAGER', 'HRM'])
-  systemRole?: 'EMPLOYEE' | 'PROJECT_MANAGER' | 'OPERATION_MANAGER' | 'HRM';
+  @IsEnum([
+    'EMPLOYEE',
+    'PROJECT_MANAGER',
+    'OPERATION_MANAGER',
+    'HRM',
+    'ADMIN',
+    'CEO',
+    'CTO',
+    'STAFF',
+    'INTERNS',
+  ])
+  systemRole?:
+    | 'EMPLOYEE'
+    | 'PROJECT_MANAGER'
+    | 'OPERATION_MANAGER'
+    | 'HRM'
+    | 'ADMIN'
+    | 'CEO'
+    | 'CTO'
+    | 'STAFF'
+    | 'INTERNS';
 }

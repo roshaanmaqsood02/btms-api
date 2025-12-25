@@ -40,7 +40,16 @@ export class UsersService {
     department?: string;
     projects?: string[];
     positions?: string[];
-    systemRole?: 'EMPLOYEE' | 'PROJECT_MANAGER' | 'OPERATION_MANAGER' | 'HRM';
+    systemRole?:
+      | 'EMPLOYEE'
+      | 'PROJECT_MANAGER'
+      | 'OPERATION_MANAGER'
+      | 'HRM'
+      | 'ADMIN'
+      | 'CEO'
+      | 'CTO'
+      | 'STAFF'
+      | 'INTERNS';
     profilePic?: string;
   }): Promise<User> {
     try {
@@ -447,3 +456,12 @@ export class UsersService {
     return rest as User;
   }
 }
+
+export const isAdmin = (user: any): boolean => {
+  return user?.systemRole === 'ADMIN';
+};
+
+export const isManagerOrAbove = (user: any): boolean => {
+  const managerRoles = ['ADMIN', 'HRM', 'OPERATION_MANAGER', 'PROJECT_MANAGER'];
+  return managerRoles.includes(user?.systemRole);
+};
