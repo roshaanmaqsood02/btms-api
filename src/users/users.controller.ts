@@ -21,10 +21,6 @@ import { profilePicMulterConfig } from 'src/common/multer.config';
 import { AuthGuard } from '@nestjs/passport';
 import { RegisterDto } from './dto';
 
-/* -------------------------------------------------------------------------- */
-/*                                Create User Only HRM                        */
-/* -------------------------------------------------------------------------- */
-
 @Controller('users')
 @UseGuards(AuthGuard('jwt'))
 export class UsersController {
@@ -81,52 +77,88 @@ export class UsersController {
     @Body() dto: UpdateUserDto,
     @Request() req,
   ) {
-    // Check if user has permission
+    const currentUser = req.user;
+    const targetUserId = +id;
+
+    // 1. Check if user is trying to update themselves
+    if (currentUser.id === targetUserId) {
+      // Users can update their own info (except system role)
+      if (dto.systemRole && dto.systemRole !== currentUser.systemRole) {
+        throw new ForbiddenException('You cannot change your own system role');
+      }
+      return this.usersService.update(targetUserId, dto);
+    }
+
+    // 2. Check if user has permission to update others
     const allowedRoles = ['OPERATION_MANAGER', 'HRM'];
-    if (!allowedRoles.includes(req.user.systemRole)) {
+    if (!allowedRoles.includes(currentUser.systemRole)) {
       throw new ForbiddenException(
         'Only Operation Managers or HRM can update user information',
       );
     }
 
-    // Prevent self-promotion/demotion if not HRM
-    if (dto.systemRole && req.user.systemRole !== 'HRM') {
-      throw new ForbiddenException('Only HRM can change user roles');
-    }
-
-    // Get the target user
-    const targetUser = await this.usersService.findById(+id);
+    // 3. Get the target user
+    const targetUser = await this.usersService.findById(targetUserId);
     if (!targetUser) {
       throw new NotFoundException('User not found');
     }
 
-    // HRM-specific validations
-    if (req.user.systemRole === 'HRM') {
-      // HRM can update anyone
-      return this.usersService.update(+id, dto);
+    // 4. Check role-based restrictions
+    switch (currentUser.systemRole) {
+      case 'HRM':
+        // HRM cannot update other HRM or Operation Managers
+        if (
+          targetUser.systemRole === 'HRM' ||
+          targetUser.systemRole === 'OPERATION_MANAGER'
+        ) {
+          throw new ForbiddenException(
+            'HRM cannot update other HRM or Operation Managers',
+          );
+        }
+        break;
+
+      case 'OPERATION_MANAGER':
+        // Operation Manager cannot update HRM or other Operation Managers
+        if (
+          targetUser.systemRole === 'HRM' ||
+          targetUser.systemRole === 'OPERATION_MANAGER'
+        ) {
+          throw new ForbiddenException(
+            'Operation Managers cannot update HRM or other Operation Managers',
+          );
+        }
+
+        // Operation Manager cannot change roles
+        if (dto.systemRole && dto.systemRole !== targetUser.systemRole) {
+          throw new ForbiddenException(
+            'Operation Managers cannot change user roles',
+          );
+        }
+        break;
     }
 
-    // OPERATION_MANAGER specific restrictions
-    if (req.user.systemRole === 'OPERATION_MANAGER') {
-      // Operation Manager cannot update HRM or other Operation Managers
-      if (
-        targetUser.systemRole === 'HRM' ||
-        targetUser.systemRole === 'OPERATION_MANAGER'
-      ) {
-        throw new ForbiddenException(
-          'Operation Managers cannot update HRM or other Operation Managers',
-        );
-      }
-
-      // Operation Manager cannot change roles
-      if (dto.systemRole && dto.systemRole !== targetUser.systemRole) {
-        throw new ForbiddenException(
-          'Operation Managers cannot change user roles',
-        );
+    // 5. Additional validation: Prevent changing to HRM or OPERATION_MANAGER role
+    if (dto.systemRole) {
+      if (dto.systemRole === 'HRM' || dto.systemRole === 'OPERATION_MANAGER') {
+        // Only HRM can assign these roles, but not to themselves or other managers
+        if (currentUser.systemRole !== 'HRM') {
+          throw new ForbiddenException(
+            'Only HRM can assign HRM or Operation Manager roles',
+          );
+        }
+        // Even HRM cannot assign these roles to managers
+        if (
+          targetUser.systemRole === 'HRM' ||
+          targetUser.systemRole === 'OPERATION_MANAGER'
+        ) {
+          throw new ForbiddenException(
+            'Cannot change system role of existing HRM or Operation Managers',
+          );
+        }
       }
     }
 
-    return this.usersService.update(+id, dto);
+    return this.usersService.update(targetUserId, dto);
   }
 
   /* -------------------------------------------------------------------------- */
@@ -158,8 +190,43 @@ export class UsersController {
       );
     }
 
-    // 3. For PM - check if target user is in their projects
+    // 3. Get the target user
+    const targetUser = await this.usersService.findById(targetUserId);
+    if (!targetUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    // 4. Check if trying to update another HRM or Operation Manager
+    if (
+      targetUser.systemRole === 'HRM' ||
+      targetUser.systemRole === 'OPERATION_MANAGER'
+    ) {
+      // HRM cannot update other HRM or Operation Managers' profile pictures
+      if (currentUser.systemRole === 'HRM') {
+        throw new ForbiddenException(
+          'HRM cannot update profile pictures of other HRM or Operation Managers',
+        );
+      }
+      // Operation Manager cannot update HRM or other Operation Managers
+      if (currentUser.systemRole === 'OPERATION_MANAGER') {
+        throw new ForbiddenException(
+          'Operation Managers cannot update profile pictures of HRM or other Operation Managers',
+        );
+      }
+    }
+
+    // 5. For PM - check if target user is in their projects
     if (currentUser.systemRole === 'PROJECT_MANAGER') {
+      // Project Manager cannot update HRM or Operation Managers
+      if (
+        targetUser.systemRole === 'HRM' ||
+        targetUser.systemRole === 'OPERATION_MANAGER'
+      ) {
+        throw new ForbiddenException(
+          'Project Managers cannot update profile pictures of HRM or Operation Managers',
+        );
+      }
+
       const canUpdate = await this.usersService.canPmUpdateUser(
         targetUserId,
         currentUser.id,
@@ -172,7 +239,7 @@ export class UsersController {
       }
     }
 
-    // 4. For OM - check if target user is in their operations
+    // 6. For OM - check if target user is in their operations
     if (currentUser.systemRole === 'OPERATION_MANAGER') {
       const canUpdate = await this.usersService.canOmUpdateUser(
         targetUserId,
@@ -190,7 +257,6 @@ export class UsersController {
     console.log('File received:', file?.filename);
     console.log('Current user:', req.user.id);
 
-    // 5. HRM can update anyone (no additional checks needed)
     return this.usersService.updateProfilePic(targetUserId, file);
   }
 
@@ -201,11 +267,35 @@ export class UsersController {
   // DELETE /users/:id - Only HRM
   @Delete(':id')
   async deleteUser(@Param('id') id: number, @Request() req) {
+    const currentUser = req.user;
+    const targetUserId = +id;
+
     // Only HRM can delete users
-    if (req.user.systemRole !== 'HRM') {
+    if (currentUser.systemRole !== 'HRM') {
       throw new ForbiddenException('Only HRM can delete users');
     }
 
-    return this.usersService.deleteUser(+id);
+    // Prevent HRM from deleting themselves
+    if (currentUser.id === targetUserId) {
+      throw new ForbiddenException('HRM cannot delete their own account');
+    }
+
+    // Get the target user
+    const targetUser = await this.usersService.findById(targetUserId);
+    if (!targetUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Prevent HRM from deleting other HRM or Operation Managers
+    if (
+      targetUser.systemRole === 'HRM' ||
+      targetUser.systemRole === 'OPERATION_MANAGER'
+    ) {
+      throw new ForbiddenException(
+        'HRM cannot delete other HRM or Operation Managers',
+      );
+    }
+
+    return this.usersService.deleteUser(targetUserId);
   }
 }

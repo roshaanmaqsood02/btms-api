@@ -18,12 +18,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import {
-  DeleteUserDto,
-  LoginDto,
-  RegisterDto,
-  UpdateUserDto,
-} from 'src/users/dto';
+import { DeleteUserDto, LoginDto, UpdateUserDto } from 'src/users/dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { profilePicMulterConfig } from 'src/common/multer.config';
 import { UsersService } from 'src/users/users.service';
