@@ -1,3 +1,4 @@
+// Update at the top of auth.controller.ts
 import {
   Controller,
   Post,
@@ -15,13 +16,15 @@ import {
   UseInterceptors,
   BadRequestException,
   ForbiddenException,
+  Res,
 } from '@nestjs/common';
+import type { Response } from 'express'; // Use import type
 import { AuthService } from './auth.service';
-import { AuthGuard } from '@nestjs/passport';
 import { DeleteUserDto, LoginDto, UpdateUserDto } from 'src/users/dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { profilePicMulterConfig } from 'src/common/multer.config';
 import { UsersService } from 'src/users/users.service';
+import { JwtCookieGuard } from './guard/jwt-cookie.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -31,37 +34,59 @@ export class AuthController {
   ) {}
 
   /* -------------------------------------------------------------------------- */
-  /*                                REGISTER                                    */
-  /* -------------------------------------------------------------------------- */
-  // @Post('register')
-  // @UsePipes(new ValidationPipe({ whitelist: true }))
-  // async register(@Body() registerDto: RegisterDto) {
-  //   return this.authService.register(registerDto);
-  // }
-
-  /* -------------------------------------------------------------------------- */
   /*                                  LOGIN                                     */
   /* -------------------------------------------------------------------------- */
   @Post('login')
   @UsePipes(new ValidationPipe({ whitelist: true }))
-  async login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto.email, loginDto.password);
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.login(
+      loginDto.email,
+      loginDto.password,
+    );
+
+    // Set the token in HTTP-only cookie
+    res.cookie('access_token', result.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+      sameSite: 'lax', // or 'strict' based on your needs
+      maxAge: 60 * 60 * 1000, // 1 hour in milliseconds
+      path: '/',
+    });
+
+    // Remove the token from the response body for security
+    const { accessToken, ...userWithoutToken } = result;
+
+    return {
+      message: 'Login successful',
+      user: userWithoutToken,
+    };
   }
 
   /* -------------------------------------------------------------------------- */
   /*                                 LOGOUT                                     */
   /* -------------------------------------------------------------------------- */
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtCookieGuard) // Use the new guard
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  async logout(@Request() req) {
+  async logout(@Request() req, @Res({ passthrough: true }) res: Response) {
+    // Clear the cookie
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+    });
+
     return this.authService.logout(req.user.id);
   }
 
   /* -------------------------------------------------------------------------- */
   /*                                GET PROFILE                                 */
   /* -------------------------------------------------------------------------- */
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtCookieGuard) // Use the new guard
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
@@ -70,7 +95,7 @@ export class AuthController {
   /* -------------------------------------------------------------------------- */
   /*                            UPDATE PROFILE                                  */
   /* -------------------------------------------------------------------------- */
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtCookieGuard) // Use the new guard
   @Put('profile')
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   async updateProfile(@Request() req, @Body() updateUserDto: UpdateUserDto) {
@@ -80,13 +105,13 @@ export class AuthController {
   /* -------------------------------------------------------------------------- */
   /*                       UPDATE PROFILE PICTURE                               */
   /* -------------------------------------------------------------------------- */
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtCookieGuard) // Use the new guard
   @Put('profile/picture')
   @UseInterceptors(FileInterceptor('profilePic', profilePicMulterConfig))
   async updateProfilePicture(
     @Request() req,
     @UploadedFile() file: Express.Multer.File,
-    @Body() body?: any, // Accept any body to check for userId
+    @Body() body?: any,
   ) {
     if (!file) {
       throw new BadRequestException('Profile picture is required');
@@ -95,7 +120,6 @@ export class AuthController {
     const currentUser = req.user;
     let targetUserId = currentUser.id;
 
-    // Check if admin is updating someone else's picture
     if (body && body.userId && body.userId !== currentUser.id) {
       const allowedRoles = ['HRM', 'OPERATION_MANAGER', 'PROJECT_MANAGER'];
 
@@ -117,10 +141,32 @@ export class AuthController {
   /* -------------------------------------------------------------------------- */
   /*                            DELETE USER                                     */
   /* -------------------------------------------------------------------------- */
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtCookieGuard) // Use the new guard
   @Delete('profile')
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async deleteUser(@Request() req, @Body() deleteUserDto: DeleteUserDto) {
     return this.authService.deleteUser(req.user.id, deleteUserDto.password);
+  }
+
+  /* -------------------------------------------------------------------------- */
+  /*                            REFRESH TOKEN                                   */
+  /* -------------------------------------------------------------------------- */
+  @UseGuards(JwtCookieGuard)
+  @Post('refresh')
+  async refreshToken(
+    @Request() req,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const accessToken = this.authService.generateAccessToken(req.user);
+
+    res.cookie('access_token', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 1000,
+      path: '/',
+    });
+
+    return { message: 'Token refreshed successfully' };
   }
 }

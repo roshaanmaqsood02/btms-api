@@ -49,7 +49,25 @@ export class AuthService {
 
     return {
       ...user,
-      accessToken,
+      accessToken, // Still return token for clients that want it in response body
+    };
+  }
+
+  // Add a method to generate token response
+  generateTokenResponse(user: any) {
+    const accessToken = this.generateAccessToken(user);
+
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+        uuid: user.uuid,
+        systemRole: user.systemRole,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        // Add other user fields you want to expose
+      },
+      accessToken, // For clients that want to handle tokens manually
     };
   }
 
@@ -146,7 +164,12 @@ export class AuthService {
   /* -------------------------------------------------------------------------- */
   /*                              HELPER METHODS                                */
   /* -------------------------------------------------------------------------- */
-  private generateAccessToken(user: any): string {
+
+  /* -------------------------------------------------------------------------- */
+  /*                              HELPER METHODS                                */
+  /* -------------------------------------------------------------------------- */
+  // Change from private to public
+  public generateAccessToken(user: any): string {
     const payload = {
       email: user.email,
       sub: user.id,
@@ -158,5 +181,10 @@ export class AuthService {
       secret: process.env.JWT_SECRET || 'your-secret-key',
       expiresIn: '1h',
     });
+  }
+
+  // OR Option 2: Create a public wrapper method
+  public createAccessToken(user: any): string {
+    return this.generateAccessToken(user);
   }
 }
