@@ -18,7 +18,7 @@ import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { profilePicMulterConfig } from 'src/common/multer.config';
-import { JwtCookieGuard } from 'src/auth/guard/jwt-cookie.guard';
+import { JwtCookieGuard } from 'src/common/guard/jwt-cookie.guard';
 import { RegisterDto } from './dto';
 
 @Controller('users')

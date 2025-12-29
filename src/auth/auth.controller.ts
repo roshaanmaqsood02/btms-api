@@ -24,7 +24,7 @@ import { DeleteUserDto, LoginDto, UpdateUserDto } from 'src/users/dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { profilePicMulterConfig } from 'src/common/multer.config';
 import { UsersService } from 'src/users/users.service';
-import { JwtCookieGuard } from './guard/jwt-cookie.guard';
+import { JwtCookieGuard } from '../common/guard/jwt-cookie.guard';
 
 @Controller('auth')
 export class AuthController {

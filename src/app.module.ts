@@ -8,9 +8,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { User } from './users/entities/user.entity';
 import { RequestModule } from './request/request.module';
-import { RolesGuard } from './auth/guard/roles.guard';
+import { RolesGuard } from './common/guard/roles.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtStrategy } from './auth/strategies/jwt.strategy';
+import { UserProfileModule } from './user-profile/user-profile.module';
+import { ContractsModule } from './contracts/contracts.module';
+import { EducationModule } from './education/education.module';
+import { AssetsModule } from './assets/assets.module';
+import { CredentialsModule } from './credentials/credentials.module';
 
 @Module({
   imports: [
@@ -40,6 +45,11 @@ import { JwtStrategy } from './auth/strategies/jwt.strategy';
     UsersModule,
     AuthModule,
     RequestModule,
+    UserProfileModule,
+    ContractsModule,
+    EducationModule,
+    AssetsModule,
+    CredentialsModule,
   ],
   controllers: [AppController],
   providers: [
