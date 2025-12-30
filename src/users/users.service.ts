@@ -27,13 +27,15 @@ export class UsersService {
   async create(data: {
     email: string;
     password: string;
-    name?: string;
+    firstname?: string;
+    lastname?: string;
     gender?: string;
     dateOfBirth?: Date;
     bloodGroup?: string;
     cnic?: string;
     maritalStatus?: string;
     city?: string;
+    province?: string;
     country?: string;
     phone?: string;
     postalCode?: string;
@@ -146,13 +148,15 @@ export class UsersService {
         employeeId,
         attendanceId,
         uuid: uuidv4(),
-        name: data.name,
+        firstname: data.firstname,
+        lastname: data.lastname,
         gender: data.gender,
         dateOfBirth: data.dateOfBirth,
         bloodGroup: data.bloodGroup?.toUpperCase(),
         cnic: data.cnic,
         maritalStatus: data.maritalStatus,
         city: data.city,
+        province: data.province,
         country: data.country,
         phone: data.phone,
         postalCode: data.postalCode,
@@ -204,7 +208,7 @@ export class UsersService {
     const { page, limit, search } = params;
 
     const where = search
-      ? [{ name: ILike(`%${search}%`) }, { email: ILike(`%${search}%`) }]
+      ? [{ firstname: ILike(`%${search}%`) }, { email: ILike(`%${search}%`) }]
       : undefined;
 
     const [users, total] = await this.userRepository.findAndCount({

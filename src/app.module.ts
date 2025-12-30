@@ -16,6 +16,11 @@ import { ContractsModule } from './contracts/contracts.module';
 import { EducationModule } from './education/education.module';
 import { AssetsModule } from './assets/assets.module';
 import { CredentialsModule } from './credentials/credentials.module';
+import { Asset } from './assets/entities/assets.entity';
+import { Credentials } from './credentials/entities/credentials.entity';
+import { Education } from './education/entities/education.entity';
+import { EmployeeContract } from './contracts/entities/contract.entity';
+import { JwtCookieGuard } from './common/guard/jwt-cookie.guard';
 
 @Module({
   imports: [
@@ -35,7 +40,7 @@ import { CredentialsModule } from './credentials/credentials.module';
         username: configService.get('DB_USER'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [User],
+        entities: [User, Asset, Credentials, Education, EmployeeContract],
         synchronize: true,
         // logging: configService.get('NODE_ENV') === 'development',
       }),
@@ -57,6 +62,10 @@ import { CredentialsModule } from './credentials/credentials.module';
     {
       provide: APP_GUARD,
       useClass: JwtStrategy,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: JwtCookieGuard,
     },
     {
       provide: APP_GUARD,

@@ -19,26 +19,26 @@
 ### 1. REGISTER USER (Only HRM or ADMIN)
 POST {{baseUrl}}/users
 Content-Type: {{contentType}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvc2hhYW5AZGV2LmNvbSIsInN1YiI6MTIzLCJ1dWlkIjoiMTExYWMxNGYtNzkyZi00NTkzLWEwYWUtODJkODM5ZDE1NGI2Iiwic3lzdGVtUm9sZSI6IkFETUlOIiwiaWF0IjoxNzY2NjczNTczLCJleHAiOjE3NjY2NzcxNzN9.RTxBLVYf-LuuW5ICihGGZHWVM3Rn2uCmf2Sva5s8by0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvc2hhYW5AZGV2LmNvbSIsInN1YiI6MTIzLCJ1dWlkIjoiMTExYWMxNGYtNzkyZi00NTkzLWEwYWUtODJkODM5ZDE1NGI2Iiwic3lzdGVtUm9sZSI6IkFETUlOIiwiaWF0IjoxNzY2OTk4NTI0LCJleHAiOjE3NjcwMDIxMjR9.fpwNOS3jZzsu1oAPMrDefnl2MpaPhVimo0xlMorCc9o
 
 {
-  "email": "ceo@bracketsltd.email",
+  "email": "muhammad.usman@bracketsltd.email",
   "password": "{{employeePassword}}",
-  "name": "Muhammad Awais",
+  "name": "Muhammad Usman",
   "gender": "Male",
-  "dateOfBirth": "1978-09-16",
+  "dateOfBirth": "2002-09-16",
   "bloodGroup": "O+",
-  "cnic": "34103-2321566-3",
-  "maritalStatus": "Married",
+  "cnic": "34003-2321566-3",
+  "maritalStatus": "Single",
   "city": "Gujranwala",
   "country": "Pakistan",
   "phone": "+923001234565",
   "postalCode": "54000",
   "department": "Development",
-  "projects": ["None"],
-  "positions": ["CEO"],
+  "projects": ["Monitair"],
+  "positions": ["DevOps Engineer"],
   "profilePic": "roshaan_pic.jpg",
-  "systemRole": "CEO"
+  "systemRole": "EMPLOYEE"
 }
 
 
@@ -48,8 +48,8 @@ POST {{baseUrl}}/auth/login
 Content-Type: {{contentType}}
 
 {
-  "email": "roshaan@dev.com",
-  "password": "{{employeePassword}}"
+  "email": "{{hrmEmail}}",
+  "password": "{{hrmPassword}}"
 }
 
 ### 4. Get USERS
@@ -121,3 +121,28 @@ Content-Type: {{contentType}}
 # {
 #   "message": "Account deleted successfully"
 # }
+
+
+### ==================== EMPLOYEE CONTRACTS ====================
+
+
+### Create Employee Contract
+POST {{baseUrl}}/employee-contracts/156
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1haHJ1a2hAZ21haWwuY29tIiwic3ViIjoxMjUsInV1aWQiOiJmOGY1NWMzNi02M2Y2LTRmM2YtOGVlMC04ODVmYjFmZmE5ZTEiLCJzeXN0ZW1Sb2xlIjoiSFJNIiwiaWF0IjoxNzY2OTk5MjM4LCJleHAiOjE3NjcwMDI4Mzh9.zRusGG7gxLmEv4wQiR9VlBgYY-PYkwqGtG276ZXC-UU
+
+{
+  "employeeStatus": "EMPLOYEED",
+  "jobType": "FULL_TIME",
+  "department": "Development",
+  "designation": "DevOps Engineer",
+  "position": "DevOps Engineer",
+  "reportingHr": "HR Manager",
+  "reportingManager": "Project Manager",
+  "reportingTeamLead": "Team Lead",
+  "joiningDate": "2024-01-15",
+  "contractStart": "2024-01-15",
+  "contractEnd": "2025-01-15",
+  "shift": "MORNING",
+  "workLocation": "ON_SITE"
+}

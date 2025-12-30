@@ -18,13 +18,14 @@ import {
   ForbiddenException,
   Res,
 } from '@nestjs/common';
-import type { Response } from 'express'; // Use import type
+import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { DeleteUserDto, LoginDto, UpdateUserDto } from 'src/users/dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { profilePicMulterConfig } from 'src/common/multer.config';
 import { UsersService } from 'src/users/users.service';
 import { JwtCookieGuard } from '../common/guard/jwt-cookie.guard';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -36,6 +37,7 @@ export class AuthController {
   /* -------------------------------------------------------------------------- */
   /*                                  LOGIN                                     */
   /* -------------------------------------------------------------------------- */
+  @Public()
   @Post('login')
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async login(

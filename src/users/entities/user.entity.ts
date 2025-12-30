@@ -1,9 +1,14 @@
+import { Asset } from 'src/assets/entities/assets.entity';
+import { EmployeeContract } from 'src/contracts/entities/contract.entity';
+import { Credentials } from 'src/credentials/entities/credentials.entity';
+import { Education } from 'src/education/entities/education.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   Index,
+  OneToMany,
 } from 'typeorm';
 
 @Entity('users')
@@ -31,7 +36,10 @@ export class User {
   attendanceId?: string;
 
   @Column({ nullable: true })
-  name?: string;
+  firstname?: string;
+
+  @Column({ nullable: true })
+  lastname?: string;
 
   @Column({ nullable: true })
   gender?: string;
@@ -53,6 +61,9 @@ export class User {
   // Contact Details
   @Column({ nullable: true })
   city?: string;
+
+  @Column({ nullable: true })
+  province?: string;
 
   @Column({ nullable: true })
   country?: string;
@@ -113,4 +124,20 @@ export class User {
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
+
+  /* -------------------------------------------------------------------------- */
+  /*                               Relationships                                */
+  /* -------------------------------------------------------------------------- */
+
+  @OneToMany(() => EmployeeContract, (contract) => contract.user)
+  contracts: EmployeeContract[];
+
+  @OneToMany(() => Education, (education) => education.user)
+  educations: Education[];
+
+  @OneToMany(() => Asset, (asset) => asset.user)
+  assets: Asset[];
+
+  @OneToMany(() => Credentials, (credential) => credential.user)
+  credentials: Credentials[];
 }

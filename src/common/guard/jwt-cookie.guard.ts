@@ -1,29 +1,33 @@
+// guards/jwt-cookie.guard.ts
 import {
   Injectable,
   ExecutionContext,
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
+import { Reflector } from '@nestjs/core';
+import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 @Injectable()
 export class JwtCookieGuard extends AuthGuard(['jwt', 'jwt-cookie']) {
+  constructor(private reflector: Reflector) {
+    super();
+  }
+
   canActivate(context: ExecutionContext) {
-    const request = context.switchToHttp().getRequest<Request>();
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
 
-    // Check if token exists in either cookies or authorization header
-    const hasTokenInCookie = request.cookies && request.cookies['access_token'];
-    const hasTokenInHeader =
-      request.headers.authorization?.startsWith('Bearer ');
-
-    if (!hasTokenInCookie && !hasTokenInHeader) {
-      throw new UnauthorizedException('No authentication token found');
+    if (isPublic) {
+      return true; // Skip guard for public routes
     }
 
     return super.canActivate(context);
   }
 
-  handleRequest(err: any, user: any, info: any) {
+  handleRequest(err, user, info) {
     if (err || !user) {
       throw new UnauthorizedException('Invalid or expired token');
     }
