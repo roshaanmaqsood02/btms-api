@@ -75,17 +75,11 @@ export class UsersService {
         }
       }
 
-      // Get the next employee ID
-      const maxUser = await this.userRepository
-        .createQueryBuilder('user')
-        .select('MAX(user.id)', 'maxId')
-        .getRawOne();
+      // Generate unique employee ID
+      const employeeId = await this.generateNextEmployeeId();
 
-      const nextNumber = maxUser?.maxId ? parseInt(maxUser.maxId) + 1 : 1;
-      const employeeId = `EMP${String(nextNumber).padStart(3, '0')}`;
-
-      // Generate attendance ID
-      const attendanceId = `${String(nextNumber).padStart(3, '0')}`;
+      // Generate attendance ID from employee ID (remove 'EMP' prefix)
+      const attendanceId = employeeId.replace('EMP', '');
 
       // Hash password
       const hashedPassword = await bcrypt.hash(data.password, 10);
@@ -182,6 +176,21 @@ export class UsersService {
       console.error('Error creating user:', error);
       throw new BadRequestException('Failed to create user');
     }
+  }
+
+  /**
+   * Generates a UNIQUE employee ID like EMP001, EMP002, ...
+   * Uses PostgreSQL sequence (atomic & concurrency-safe)
+   */
+  private async generateNextEmployeeId(): Promise<string> {
+    console.log('USING SEQUENCE-BASED GENERATOR');
+
+    const result = await this.userRepository.query(
+      `SELECT nextval('employee_id_seq') AS seq`,
+    );
+
+    const nextNumber = Number(result[0].seq);
+    return `EMP${String(nextNumber).padStart(3, '0')}`;
   }
 
   // Helper method to calculate age
@@ -428,22 +437,31 @@ export class UsersService {
       return false;
     }
   }
+
   /* -------------------------------------------------------------------------- */
   /*                                DELETE USER                                 */
   /* -------------------------------------------------------------------------- */
 
   async deleteUser(id: number): Promise<{ message: string }> {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    // You might want to add additional checks here:
-    // - Check if user is active
-    // - Check if user has dependencies (projects, etc.)
+    // Optional safety: prevent deleting already deleted users
+    if (user.deletedAt) {
+      throw new BadRequestException('User already deleted');
+    }
 
     try {
-      await this.userRepository.remove(user);
+      await this.userRepository.softDelete(id);
+
+      // Optional: deactivate user
+      await this.userRepository.update(id, { isActive: false });
+
       return { message: 'User deleted successfully' };
     } catch (error) {
       console.error('Error deleting user:', error);

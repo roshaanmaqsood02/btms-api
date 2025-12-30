@@ -9,6 +9,7 @@ import {
   CreateDateColumn,
   Index,
   OneToMany,
+  DeleteDateColumn,
 } from 'typeorm';
 
 @Entity('users')
@@ -28,7 +29,7 @@ export class User {
   /* -------------------------------------------------------------------------- */
 
   @Index({ unique: true })
-  @Column({ name: 'employee_id' })
+  @Column({ name: 'employee_id', nullable: false })
   employeeId: string;
 
   @Index({ unique: true })
@@ -124,6 +125,12 @@ export class User {
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
+
+  @Column({ default: true })
+  isActive: boolean;
 
   /* -------------------------------------------------------------------------- */
   /*                               Relationships                                */

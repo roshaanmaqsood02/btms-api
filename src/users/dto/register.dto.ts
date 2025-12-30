@@ -19,7 +19,11 @@ export class RegisterDto {
 
   @IsOptional()
   @IsString()
-  name?: string;
+  firstname?: string;
+
+  @IsOptional()
+  @IsString()
+  lastname?: string;
 
   @IsOptional()
   @IsString()

@@ -180,9 +180,6 @@ export class AuthService {
   /*                              HELPER METHODS                                */
   /* -------------------------------------------------------------------------- */
 
-  /* -------------------------------------------------------------------------- */
-  /*                              HELPER METHODS                                */
-  /* -------------------------------------------------------------------------- */
   // Change from private to public
   public generateAccessToken(user: any): string {
     const payload = {
